@@ -143,13 +143,6 @@
   halo.position.z = -0.6;
   portal.add(halo);
 
-  var saucer = new THREE.Mesh(
-    new THREE.CircleGeometry(2.42, 96),
-    new THREE.MeshBasicMaterial({ color: COLORS.saucer })
-  );
-  saucer.position.z = -0.25;
-  portal.add(saucer);
-
   var outerRing = new THREE.Mesh(
     new THREE.TorusGeometry(2.45, 0.022, 12, 160),
     new THREE.MeshBasicMaterial({ color: COLORS.amber })
@@ -166,23 +159,8 @@
   outerRingGlow.position.z = -0.01;
   portal.add(outerRingGlow);
 
-  var rim = new THREE.Mesh(
-    new THREE.TorusGeometry(1.5, 0.13, 24, 128),
-    new THREE.MeshBasicMaterial({ color: COLORS.warmWhite })
-  );
-  rim.position.z = 0.1;
-  portal.add(rim);
-
-  var handle = new THREE.Mesh(
-    new THREE.TorusGeometry(0.34, 0.1, 16, 48, Math.PI),
-    new THREE.MeshBasicMaterial({ color: COLORS.warmWhite })
-  );
-  handle.position.set(1.5, 0, 0.1);
-  handle.rotation.z = -Math.PI / 2;
-  portal.add(handle);
-
   // Coffee surface
-  var COFFEE_R = 1.44;
+  var COFFEE_R = 2.0;
   var DISC_RINGS = 40;
   var DISC_SEGS = 80;
   var coneGeo = makeDiscGeometry(COFFEE_R, DISC_RINGS, DISC_SEGS);
