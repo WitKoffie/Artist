@@ -38,7 +38,7 @@
 
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(34, 1, 0.1, 50);
-  camera.position.set(0, 0, 8.2);
+  camera.position.set(0, 0, 9.4);
 
   var portal = new THREE.Group();
   scene.add(portal);
@@ -297,7 +297,7 @@
     portal.rotation.x += (targetRX - portal.rotation.x) * 0.05;
     portal.rotation.y += (targetRY - portal.rotation.y) * 0.05;
     portal.rotation.z += 0.0006;
-    camera.position.z = 7.2 + scrollDepth * 1.6;
+    camera.position.z = 8.4 + scrollDepth * 1.6;
     portal.position.y = scrollDepth * 0.7;
 
     var glowBase = soundActive ? 0.3 : 0.14;

@@ -509,7 +509,7 @@ body.sound-on #enter-sound { display: none; }
 .portal-stage {
   position: relative;
   aspect-ratio: 1 / 1;
-  max-width: min(480px, 72vw);
+  max-width: min(552px, 83vw);
   margin-inline: auto;
   width: 100%;
 }
@@ -1156,7 +1156,7 @@ section + section::before {
 @media (max-width: 1024px) {
   .hero-grid { grid-template-columns: 1fr; text-align: center; }
   .hero-copy { order: 2; }
-  .portal-stage { order: 1; max-width: min(390px, 67vw); }
+  .portal-stage { order: 1; max-width: min(450px, 77vw); }
   .hero-tagline-wrap { justify-content: center; }
   .hero-actions { justify-content: center; }
   .hero-sub { margin-inline: auto; }
