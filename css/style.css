@@ -1100,6 +1100,20 @@ body.sound-on .sound-hint { display: none; }
 .footer-platforms .icon-link { width: 40px; height: 40px; }
 .footer-platforms .icon-link img { width: 17px; height: 17px; }
 
+.footer-afrihuis {
+  text-align: center;
+  font-family: var(--font-heading);
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: linear-gradient(115deg, var(--color-warm-white) 20%, var(--color-amber) 60%, var(--color-gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 2rem;
+  padding-top: 0.5rem;
+}
+
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
