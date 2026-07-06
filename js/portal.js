@@ -38,7 +38,7 @@
 
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(34, 1, 0.1, 50);
-  camera.position.set(0, 0, 9.4);
+  camera.position.set(0, 0, 10.3);
 
   var portal = new THREE.Group();
   scene.add(portal);
@@ -223,8 +223,31 @@
   );
   portal.add(steam);
 
+  // Cursor-following bubble
+  var cursorBubble = new THREE.Mesh(
+    new THREE.SphereGeometry(0.12, 24, 24),
+    new THREE.MeshBasicMaterial({
+      color: COLORS.cream, transparent: true, opacity: 0,
+      depthWrite: false, blending: THREE.AdditiveBlending
+    })
+  );
+  cursorBubble.position.z = 0.3;
+  portal.add(cursorBubble);
+
+  var bubbleGlow = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.7, 0.7),
+    new THREE.MeshBasicMaterial({
+      map: makeGlowTexture('rgba(214,154,58,0.6)', 'rgba(214,154,58,0)'),
+      transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending
+    })
+  );
+  bubbleGlow.position.z = 0.25;
+  portal.add(bubbleGlow);
+
+  var bubbleTargetX = 0, bubbleTargetY = 0, bubbleVisible = false;
+
   /* ---- ripple system (direct coordinate mapping — no raycasting) ---------- */
-  var MAX_RIPPLES = 10;
+  var MAX_RIPPLES = 16;
   var ripples = [];
   var lastRipX = 999, lastRipY = 999;
   var mouseOverCup = false;
@@ -297,7 +320,7 @@
     portal.rotation.x += (targetRX - portal.rotation.x) * 0.05;
     portal.rotation.y += (targetRY - portal.rotation.y) * 0.05;
     portal.rotation.z += 0.0006;
-    camera.position.z = 8.4 + scrollDepth * 1.6;
+    camera.position.z = 9.3 + scrollDepth * 1.6;
     portal.position.y = scrollDepth * 0.7;
 
     var glowBase = soundActive ? 0.3 : 0.14;
@@ -345,20 +368,38 @@
         mouseLocalX = worldX * cosA - worldY * sinA;
         mouseLocalY = worldX * sinA + worldY * cosA;
 
+        bubbleTargetX = worldX;
+        bubbleTargetY = worldY;
+        bubbleVisible = true;
+
         var dx = mouseLocalX - lastRipX;
         var dy = mouseLocalY - lastRipY;
-        if (dx * dx + dy * dy > 0.008) {
+        if (dx * dx + dy * dy > 0.003) {
           ripples.push({ x: mouseLocalX, y: mouseLocalY, birth: t });
           if (ripples.length > MAX_RIPPLES) ripples.shift();
           lastRipX = mouseLocalX;
           lastRipY = mouseLocalY;
         }
+      } else {
+        bubbleVisible = false;
       }
     } else {
       mouseOverCup = false;
+      bubbleVisible = false;
     }
 
-    while (ripples.length && t - ripples[0].birth > 3.5) ripples.shift();
+    // Cursor bubble follows mouse smoothly
+    var bubbleOpTarget = bubbleVisible ? 0.7 : 0;
+    cursorBubble.material.opacity += (bubbleOpTarget - cursorBubble.material.opacity) * 0.12;
+    bubbleGlow.material.opacity += (bubbleOpTarget * 0.5 - bubbleGlow.material.opacity) * 0.12;
+    cursorBubble.position.x += (bubbleTargetX - cursorBubble.position.x) * 0.15;
+    cursorBubble.position.y += (bubbleTargetY - cursorBubble.position.y) * 0.15;
+    bubbleGlow.position.x = cursorBubble.position.x;
+    bubbleGlow.position.y = cursorBubble.position.y;
+    var bubblePulse = 1 + Math.sin(t * 4) * 0.15;
+    cursorBubble.scale.setScalar(bubblePulse);
+
+    while (ripples.length && t - ripples[0].birth > 4.5) ripples.shift();
 
     var cpos = coffee.geometry.attributes.position;
     var hasRipples = ripples.length > 0;
@@ -371,11 +412,11 @@
           var rdx = vx - rip.x, rdy = vy - rip.y;
           var d = Math.sqrt(rdx * rdx + rdy * rdy);
           var age = t - rip.birth;
-          var waveFront = age * 0.7;
+          var waveFront = age * 0.55;
           var distFromFront = Math.abs(d - waveFront);
-          var ringFalloff = Math.exp(-distFromFront * distFromFront * 5);
-          var timeFade = Math.exp(-age * 0.9);
-          var wave = Math.sin(d * 12 - age * 5) * 0.06;
+          var ringFalloff = Math.exp(-distFromFront * distFromFront * 3);
+          var timeFade = Math.exp(-age * 0.6);
+          var wave = Math.sin(d * 8 - age * 4) * 0.14;
           z += wave * ringFalloff * timeFade;
         }
       }
