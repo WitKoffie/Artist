@@ -65,8 +65,10 @@
     <section style="padding-top: 0;">
       <div class="container contact-layout">
 
-        <!-- Form: builds a pre-filled email in the visitor's own mail app -->
         <form id="contact-form" class="contact-form glass-card reveal" novalidate>
+          <input type="hidden" name="access_key" value="06cf6e68-1fdd-4e7a-8c97-15059715a838">
+          <input type="hidden" name="subject" value="WitKoffie website enquiry">
+          <input type="hidden" name="from_name" value="WitKoffie Website">
           <div class="field">
             <label for="cf-name">Name</label>
             <input id="cf-name" name="name" type="text" autocomplete="name" required
@@ -100,8 +102,9 @@
             <p class="error-msg" id="cf-message-error">Please write a short message (at least a few words).</p>
           </div>
 
+          <input type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off">
+
           <button class="btn btn-primary" type="submit">Send Enquiry</button>
-          <p class="form-note">Sending opens your own email app with the message pre-filled — this site stores nothing.</p>
           <p id="form-status" class="form-note" role="status" aria-live="polite"></p>
         </form>
 

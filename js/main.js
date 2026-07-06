@@ -248,7 +248,7 @@
   }
   renderReleases();
 
-  /* ---- contact form: validated mailto ------------------------------------------ */
+  /* ---- contact form: Web3Forms submission --------------------------------------- */
   const form = $('#contact-form');
   if (form) {
     const fields = {
@@ -257,6 +257,7 @@
       reason: $('#cf-reason'),
       message: $('#cf-message')
     };
+    const submitBtn = form.querySelector('button[type="submit"]');
 
     function setInvalid(input, invalid) {
       const field = input.closest('.field');
@@ -277,25 +278,33 @@
         return;
       }
 
-      const reason = fields.reason.value || 'General';
-      const subject = 'WitKoffie enquiry: ' + reason;
-      const body =
-        'Name: ' + fields.name.value.trim() + '\n' +
-        'Email: ' + fields.email.value.trim() + '\n' +
-        'Reason: ' + reason + '\n\n' +
-        'Message:\n' + fields.message.value.trim();
-
-      // Static site -> hand off to the visitor's own mail app.
-      window.location.href =
-        'mailto:witkoffie@outlook.com' +
-        '?subject=' + encodeURIComponent(subject) +
-        '&body=' + encodeURIComponent(body);
-
       const note = $('#form-status');
-      if (note) note.textContent = 'Your email app should open now with the message pre-filled.';
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
+
+      var formData = new FormData(form);
+      formData.set('subject', 'WitKoffie enquiry: ' + (fields.reason.value || 'General'));
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.success) {
+            if (note) { note.textContent = 'Message sent! WitKoffie will get back to you.'; note.style.color = 'var(--color-amber)'; }
+            form.reset();
+          } else {
+            if (note) { note.textContent = 'Something went wrong. Please try again.'; note.style.color = '#e05050'; }
+          }
+        })
+        .catch(function () {
+          if (note) { note.textContent = 'Network error. Please check your connection and try again.'; note.style.color = '#e05050'; }
+        })
+        .finally(function () {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Enquiry'; }
+        });
     });
 
-    // clear error state while typing
     Object.keys(fields).forEach((k) => {
       fields[k].addEventListener('input', () => setInvalid(fields[k], false));
     });
