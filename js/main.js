@@ -213,7 +213,7 @@
       }
       if (date) date.textContent = featured.releaseDate;
       if (desc) desc.textContent = featured.description;
-      if (player) player.appendChild(playerRow('featured-release', featured.previewAudio, featured.title));
+      if (player && featured.previewAudio) player.appendChild(playerRow('featured-release', featured.previewAudio, featured.title));
       if (links) links.appendChild(platformButtons(featured));
     }
 
@@ -252,7 +252,14 @@
         body.appendChild(h3);
         body.appendChild(date);
         body.appendChild(p);
-        body.appendChild(playerRow('release-' + i, r.previewAudio, r.title));
+        if (r.previewAudio) {
+          body.appendChild(playerRow('release-' + i, r.previewAudio, r.title));
+        } else {
+          const listen = document.createElement('p');
+          listen.className = 'listen-hint';
+          listen.textContent = 'Listen on the sites below';
+          body.appendChild(listen);
+        }
         body.appendChild(platformButtons(r));
         card.appendChild(body);
 
