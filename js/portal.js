@@ -223,28 +223,7 @@
   );
   portal.add(steam);
 
-  // Cursor-following bubble
-  var cursorBubble = new THREE.Mesh(
-    new THREE.SphereGeometry(0.12, 24, 24),
-    new THREE.MeshBasicMaterial({
-      color: COLORS.cream, transparent: true, opacity: 0,
-      depthWrite: false, blending: THREE.AdditiveBlending
-    })
-  );
-  cursorBubble.position.z = 0.3;
-  portal.add(cursorBubble);
-
-  var bubbleGlow = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.7, 0.7),
-    new THREE.MeshBasicMaterial({
-      map: makeGlowTexture('rgba(214,154,58,0.6)', 'rgba(214,154,58,0)'),
-      transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending
-    })
-  );
-  bubbleGlow.position.z = 0.25;
-  portal.add(bubbleGlow);
-
-  var bubbleTargetX = 0, bubbleTargetY = 0, bubbleVisible = false;
+  var cursorWorldX = 0, cursorWorldY = 0;
 
   /* ---- ripple system (direct coordinate mapping — no raycasting) ---------- */
   var MAX_RIPPLES = 16;
@@ -338,10 +317,22 @@
 
     var sp = steam.geometry.attributes.position;
     for (var i = 0; i < steamCount; i++) {
-      var y = sp.getY(i) + 0.006 + steamSeed[i] * 0.004;
-      if (y > 2.4) y = 0.2;
-      sp.setY(i, y);
-      sp.setX(i, Math.sin(t * 0.8 + steamSeed[i] * 6.28 + y) * 0.28 * (y / 2.4 + 0.2));
+      var sx = sp.getX(i), sy = sp.getY(i);
+      sy += 0.006 + steamSeed[i] * 0.004;
+      if (sy > 2.4) { sy = 0.2; sx = (Math.random() - 0.5) * 0.8; }
+      var baseX = Math.sin(t * 0.8 + steamSeed[i] * 6.28 + sy) * 0.28 * (sy / 2.4 + 0.2);
+      if (mouseOverCup) {
+        var attractX = cursorWorldX - sx;
+        var attractY = cursorWorldY - sy;
+        var aDist = Math.sqrt(attractX * attractX + attractY * attractY);
+        var pull = Math.max(0, 1 - aDist / 2.5) * 0.08;
+        sx += attractX * pull;
+        sy += attractY * pull * 0.5;
+      } else {
+        sx += (baseX - sx) * 0.05;
+      }
+      sp.setX(i, sx);
+      sp.setY(i, sy);
     }
     sp.needsUpdate = true;
 
@@ -368,9 +359,8 @@
         mouseLocalX = worldX * cosA - worldY * sinA;
         mouseLocalY = worldX * sinA + worldY * cosA;
 
-        bubbleTargetX = worldX;
-        bubbleTargetY = worldY;
-        bubbleVisible = true;
+        cursorWorldX = worldX;
+        cursorWorldY = worldY;
 
         var dx = mouseLocalX - lastRipX;
         var dy = mouseLocalY - lastRipY;
@@ -380,24 +370,10 @@
           lastRipX = mouseLocalX;
           lastRipY = mouseLocalY;
         }
-      } else {
-        bubbleVisible = false;
       }
     } else {
       mouseOverCup = false;
-      bubbleVisible = false;
     }
-
-    // Cursor bubble follows mouse smoothly
-    var bubbleOpTarget = bubbleVisible ? 0.7 : 0;
-    cursorBubble.material.opacity += (bubbleOpTarget - cursorBubble.material.opacity) * 0.12;
-    bubbleGlow.material.opacity += (bubbleOpTarget * 0.5 - bubbleGlow.material.opacity) * 0.12;
-    cursorBubble.position.x += (bubbleTargetX - cursorBubble.position.x) * 0.15;
-    cursorBubble.position.y += (bubbleTargetY - cursorBubble.position.y) * 0.15;
-    bubbleGlow.position.x = cursorBubble.position.x;
-    bubbleGlow.position.y = cursorBubble.position.y;
-    var bubblePulse = 1 + Math.sin(t * 4) * 0.15;
-    cursorBubble.scale.setScalar(bubblePulse);
 
     while (ripples.length && t - ripples[0].birth > 4.5) ripples.shift();
 
