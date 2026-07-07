@@ -468,6 +468,33 @@
     requestAnimationFrame(tick);
   }
 
+  /* ---- cup hover audio ----------------------------------------------------- */
+  var hoverAudio = new Audio('./assets/audio/promo.mp3');
+  hoverAudio.loop = true;
+  hoverAudio.volume = 0;
+  var hoverPlaying = false;
+  var hoverVolume = 0;
+  var hoverTarget = 0;
+  var FADE_SPEED = 0.04;
+
+  function updateHoverAudio() {
+    hoverTarget = mouseOverCup ? 1 : 0;
+    hoverVolume += (hoverTarget - hoverVolume) * FADE_SPEED;
+    if (hoverVolume < 0.005) hoverVolume = 0;
+    if (hoverVolume > 0.995) hoverVolume = 1;
+    hoverAudio.volume = hoverVolume * 0.7;
+
+    if (mouseOverCup && !hoverPlaying) {
+      hoverAudio.play().catch(function () {});
+      hoverPlaying = true;
+    } else if (!mouseOverCup && hoverPlaying && hoverVolume === 0) {
+      hoverAudio.pause();
+      hoverPlaying = false;
+    }
+    requestAnimationFrame(updateHoverAudio);
+  }
+  requestAnimationFrame(updateHoverAudio);
+
   /* ---- public API ---------------------------------------------------------- */
   window.WKPortal = {
     setSoundActive: function (on) {
