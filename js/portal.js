@@ -195,8 +195,8 @@
   rimHighlight.position.z = 0.22;
   portal.add(rimHighlight);
 
-  // Handle ("ear") — rounded D-shape matching the hero cup
-  var hW = 0.40, hH = 0.30, hR = 0.18;
+  // Handle ("ear") — rectangular tab matching the hero-bg cup
+  var hW = 0.45, hH = 0.18, hR = 0.045;
   var hX = CUP_R + RIM_THICK * 0.35;
   var handleShape = new THREE.Shape();
   handleShape.moveTo(0, hH);
@@ -206,9 +206,8 @@
   handleShape.quadraticCurveTo(hW, -hH, hW - hR, -hH);
   handleShape.lineTo(0, -hH);
   // inner cutout
-  var wall = 0.07;
-  var cutW = hW - wall, cutH = hH - wall, cutR = hR - wall * 0.5;
-  if (cutR < 0.04) cutR = 0.04;
+  var wall = 0.065;
+  var cutW = hW - wall, cutH = hH - wall, cutR = hR * 0.5;
   var hole = new THREE.Path();
   hole.moveTo(0, cutH);
   hole.lineTo(cutW - cutR, cutH);
@@ -220,7 +219,7 @@
   handleShape.holes.push(hole);
   var handleGeo = new THREE.ExtrudeGeometry(handleShape, {
     depth: 0.08, bevelEnabled: true, bevelThickness: 0.02,
-    bevelSize: 0.02, bevelSegments: 4
+    bevelSize: 0.02, bevelSegments: 3
   });
   var handle = new THREE.Mesh(handleGeo, cupRimMat);
   handle.position.set(hX, 0, 0.12);
