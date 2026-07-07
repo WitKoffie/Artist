@@ -38,7 +38,7 @@
 
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(34, 1, 0.1, 50);
-  camera.position.set(0, 0, 8.2);
+  camera.position.set(0, 0, 10.3);
 
   var portal = new THREE.Group();
   scene.add(portal);
@@ -133,6 +133,11 @@
   }
 
   /* ---- build the portal --------------------------------------------------- */
+  var CUP_R = 1.7;
+  var RIM_THICK = 0.14;
+  var OUTER_RING_R = 2.45;
+
+  // Ambient glow behind everything
   var halo = new THREE.Mesh(
     new THREE.PlaneGeometry(5.6, 5.6),
     new THREE.MeshBasicMaterial({
@@ -143,21 +148,15 @@
   halo.position.z = -0.6;
   portal.add(halo);
 
-  var saucer = new THREE.Mesh(
-    new THREE.CircleGeometry(2.42, 96),
-    new THREE.MeshBasicMaterial({ color: COLORS.saucer })
-  );
-  saucer.position.z = -0.25;
-  portal.add(saucer);
-
+  // Golden outer ring (the circle around the cup)
   var outerRing = new THREE.Mesh(
-    new THREE.TorusGeometry(2.45, 0.022, 12, 160),
+    new THREE.TorusGeometry(OUTER_RING_R, 0.022, 12, 160),
     new THREE.MeshBasicMaterial({ color: COLORS.amber })
   );
   portal.add(outerRing);
 
   var outerRingGlow = new THREE.Mesh(
-    new THREE.RingGeometry(2.28, 2.62, 128),
+    new THREE.RingGeometry(OUTER_RING_R - 0.17, OUTER_RING_R + 0.17, 128),
     new THREE.MeshBasicMaterial({
       color: COLORS.amber, transparent: true, opacity: 0.16,
       depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide
@@ -166,23 +165,57 @@
   outerRingGlow.position.z = -0.01;
   portal.add(outerRingGlow);
 
-  var rim = new THREE.Mesh(
-    new THREE.TorusGeometry(1.5, 0.13, 24, 128),
-    new THREE.MeshBasicMaterial({ color: COLORS.warmWhite })
+  // Dark fill between outer ring and cup (the black gap)
+  var darkFill = new THREE.Mesh(
+    new THREE.RingGeometry(CUP_R + RIM_THICK + 0.02, OUTER_RING_R - 0.03, 128),
+    new THREE.MeshBasicMaterial({
+      color: 0x0a0806, side: THREE.DoubleSide
+    })
   );
-  rim.position.z = 0.1;
-  portal.add(rim);
+  darkFill.position.z = 0.01;
+  portal.add(darkFill);
 
-  var handle = new THREE.Mesh(
-    new THREE.TorusGeometry(0.34, 0.1, 16, 48, Math.PI),
-    new THREE.MeshBasicMaterial({ color: COLORS.warmWhite })
+  // Cup rim (white/cream ring around coffee)
+  var cupRimMat = new THREE.MeshBasicMaterial({ color: 0xf0e8da });
+  var cupRim = new THREE.Mesh(
+    new THREE.TorusGeometry(CUP_R + RIM_THICK * 0.5, RIM_THICK * 0.5, 16, 128),
+    cupRimMat
   );
-  handle.position.set(1.5, 0, 0.1);
-  handle.rotation.z = -Math.PI / 2;
+  cupRim.position.z = 0.18;
+  portal.add(cupRim);
+
+  // Inner rim highlight
+  var rimHighlight = new THREE.Mesh(
+    new THREE.TorusGeometry(CUP_R + RIM_THICK * 0.5, RIM_THICK * 0.52, 16, 128),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff, transparent: true, opacity: 0.12,
+      depthWrite: false, blending: THREE.AdditiveBlending
+    })
+  );
+  rimHighlight.position.z = 0.22;
+  portal.add(rimHighlight);
+
+  // Handle ("ear") — rectangular tab matching the hero-bg cup
+  var hW = 0.45, hH = 0.18, hR = 0.045;
+  var hX = CUP_R + RIM_THICK * 0.35;
+  var handleShape = new THREE.Shape();
+  handleShape.moveTo(0, hH);
+  handleShape.lineTo(hW - hR, hH);
+  handleShape.quadraticCurveTo(hW, hH, hW, hH - hR);
+  handleShape.lineTo(hW, -hH + hR);
+  handleShape.quadraticCurveTo(hW, -hH, hW - hR, -hH);
+  handleShape.lineTo(0, -hH);
+  var handleGeo = new THREE.ExtrudeGeometry(handleShape, {
+    depth: 0.08, bevelEnabled: true, bevelThickness: 0.02,
+    bevelSize: 0.02, bevelSegments: 3
+  });
+  var handle = new THREE.Mesh(handleGeo, cupRimMat);
+  handle.position.set(hX, 0, 0.12);
+  handle.rotation.y = 0;
   portal.add(handle);
 
   // Coffee surface
-  var COFFEE_R = 1.44;
+  var COFFEE_R = CUP_R;
   var DISC_RINGS = 40;
   var DISC_SEGS = 80;
   var coneGeo = makeDiscGeometry(COFFEE_R, DISC_RINGS, DISC_SEGS);
@@ -193,7 +226,7 @@
   for (var i = 0; i < vertCount; i++) {
     var x = pos.getX(i), y = pos.getY(i);
     var r = Math.sqrt(x * x + y * y) / COFFEE_R;
-    var z = -0.42 * (1 - r) * (1 - r);
+    var z = -0.32 * (1 - r) * (1 - r);
     pos.setZ(i, z);
     baseZ[i] = z;
   }
@@ -211,7 +244,7 @@
   var PULSES = 3, pulses = [];
   for (var i = 0; i < PULSES; i++) {
     var m = new THREE.Mesh(
-      new THREE.RingGeometry(0.96, 1.0, 96),
+      new THREE.RingGeometry(0.8, 0.84, 96),
       new THREE.MeshBasicMaterial({
         color: COLORS.amber, transparent: true, opacity: 0,
         depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide
@@ -245,8 +278,10 @@
   );
   portal.add(steam);
 
+  var cursorWorldX = 0, cursorWorldY = 0;
+
   /* ---- ripple system (direct coordinate mapping — no raycasting) ---------- */
-  var MAX_RIPPLES = 10;
+  var MAX_RIPPLES = 16;
   var ripples = [];
   var lastRipX = 999, lastRipY = 999;
   var mouseOverCup = false;
@@ -310,7 +345,7 @@
     if (!running) return;
     t += 0.016;
 
-    coffee.rotation.z -= 0.0035 + (audioPlaying ? 0.006 : 0);
+    coffee.rotation.z -= 0.001 + (audioPlaying ? 0.003 : 0);
 
     var energy = soundActive ? (audioPlaying ? 1 : 0.55) : 0.25;
     var breathe = 1 + Math.sin(t * 1.4) * 0.012 * (1 + energy);
@@ -318,8 +353,7 @@
 
     portal.rotation.x += (targetRX - portal.rotation.x) * 0.05;
     portal.rotation.y += (targetRY - portal.rotation.y) * 0.05;
-    portal.rotation.z += 0.0006;
-    camera.position.z = 7.2 + scrollDepth * 1.6;
+    camera.position.z = 9.3 + scrollDepth * 1.6;
     portal.position.y = scrollDepth * 0.7;
 
     var glowBase = soundActive ? 0.3 : 0.14;
@@ -337,10 +371,22 @@
 
     var sp = steam.geometry.attributes.position;
     for (var i = 0; i < steamCount; i++) {
-      var y = sp.getY(i) + 0.006 + steamSeed[i] * 0.004;
-      if (y > 2.4) y = 0.2;
-      sp.setY(i, y);
-      sp.setX(i, Math.sin(t * 0.8 + steamSeed[i] * 6.28 + y) * 0.28 * (y / 2.4 + 0.2));
+      var sx = sp.getX(i), sy = sp.getY(i);
+      sy += 0.006 + steamSeed[i] * 0.004;
+      if (sy > 2.4) { sy = 0.2; sx = (Math.random() - 0.5) * 0.8; }
+      var baseX = Math.sin(t * 0.8 + steamSeed[i] * 6.28 + sy) * 0.28 * (sy / 2.4 + 0.2);
+      if (mouseOverCup) {
+        var attractX = cursorWorldX - sx;
+        var attractY = cursorWorldY - sy;
+        var aDist = Math.sqrt(attractX * attractX + attractY * attractY);
+        var pull = Math.max(0, 1 - aDist / 2.5) * 0.08;
+        sx += attractX * pull;
+        sy += attractY * pull * 0.5;
+      } else {
+        sx += (baseX - sx) * 0.05;
+      }
+      sp.setX(i, sx);
+      sp.setY(i, sy);
     }
     sp.needsUpdate = true;
 
@@ -367,9 +413,12 @@
         mouseLocalX = worldX * cosA - worldY * sinA;
         mouseLocalY = worldX * sinA + worldY * cosA;
 
+        cursorWorldX = worldX;
+        cursorWorldY = worldY;
+
         var dx = mouseLocalX - lastRipX;
         var dy = mouseLocalY - lastRipY;
-        if (dx * dx + dy * dy > 0.008) {
+        if (dx * dx + dy * dy > 0.003) {
           ripples.push({ x: mouseLocalX, y: mouseLocalY, birth: t });
           if (ripples.length > MAX_RIPPLES) ripples.shift();
           lastRipX = mouseLocalX;
@@ -380,7 +429,7 @@
       mouseOverCup = false;
     }
 
-    while (ripples.length && t - ripples[0].birth > 3.5) ripples.shift();
+    while (ripples.length && t - ripples[0].birth > 4.5) ripples.shift();
 
     var cpos = coffee.geometry.attributes.position;
     var hasRipples = ripples.length > 0;
@@ -393,11 +442,11 @@
           var rdx = vx - rip.x, rdy = vy - rip.y;
           var d = Math.sqrt(rdx * rdx + rdy * rdy);
           var age = t - rip.birth;
-          var waveFront = age * 0.7;
+          var waveFront = age * 0.55;
           var distFromFront = Math.abs(d - waveFront);
-          var ringFalloff = Math.exp(-distFromFront * distFromFront * 5);
-          var timeFade = Math.exp(-age * 0.9);
-          var wave = Math.sin(d * 12 - age * 5) * 0.06;
+          var ringFalloff = Math.exp(-distFromFront * distFromFront * 3);
+          var timeFade = Math.exp(-age * 0.6);
+          var wave = Math.sin(d * 8 - age * 4) * 0.14;
           z += wave * ringFalloff * timeFade;
         }
       }
@@ -418,6 +467,33 @@
   } else {
     requestAnimationFrame(tick);
   }
+
+  /* ---- cup hover audio ----------------------------------------------------- */
+  var hoverAudio = new Audio('./assets/audio/promo.mp3');
+  hoverAudio.loop = true;
+  hoverAudio.volume = 0;
+  var hoverPlaying = false;
+  var hoverVolume = 0;
+  var hoverTarget = 0;
+  var FADE_SPEED = 0.04;
+
+  function updateHoverAudio() {
+    hoverTarget = mouseOverCup ? 1 : 0;
+    hoverVolume += (hoverTarget - hoverVolume) * FADE_SPEED;
+    if (hoverVolume < 0.005) hoverVolume = 0;
+    if (hoverVolume > 0.995) hoverVolume = 1;
+    hoverAudio.volume = hoverVolume * 0.7;
+
+    if (mouseOverCup && !hoverPlaying) {
+      hoverAudio.play().catch(function () {});
+      hoverPlaying = true;
+    } else if (!mouseOverCup && hoverPlaying && hoverVolume === 0) {
+      hoverAudio.pause();
+      hoverPlaying = false;
+    }
+    requestAnimationFrame(updateHoverAudio);
+  }
+  requestAnimationFrame(updateHoverAudio);
 
   /* ---- public API ---------------------------------------------------------- */
   window.WKPortal = {
