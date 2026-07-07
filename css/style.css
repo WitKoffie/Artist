@@ -1324,10 +1324,27 @@ section + section::before {
 }
 .epk-link-card a:hover { text-decoration: underline; }
 
+.epk-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.epk-photo { overflow: hidden; border-radius: var(--radius); }
+.epk-photo img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.epk-photo:hover img { transform: scale(1.04); }
+
 @media (max-width: 700px) {
   .epk-bio-grid { grid-template-columns: 1fr; }
   .epk-assets-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   .epk-links-grid { grid-template-columns: 1fr 1fr; }
+  .epk-photos-grid { grid-template-columns: 1fr; }
 }
 
 /* --------------------------------------------------------------------------
