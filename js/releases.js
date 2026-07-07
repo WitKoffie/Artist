@@ -22,7 +22,7 @@ window.WK_RELEASES = [
     coverImage: './assets/images/ver-van-jou-cover.jpg',
     description: 'Distance and longing poured into warm bass and Afrikaans melody — a deep house letter home.',
     previewAudio: '',
-    spotifyUrl: '#',
+    spotifyUrl: 'https://open.spotify.com/album/1FxoTz5SYFz3RxGfj99aqQ',
     appleMusicUrl: 'https://music.apple.com/us/album/ver-van-jou-single/6782656077',
     youtubeUrl: 'https://www.youtube.com/watch?v=zr05J2wnM7E&list=OLAK5uy_mfExxbAkSIgebfZpuER0t0X1W0txW8N4Q',
     distrokidUrl: ''
@@ -34,7 +34,7 @@ window.WK_RELEASES = [
     coverImage: './assets/images/tussen-ons-cover.jpg',
     description: 'Two voices reaching across the beat — intimate Afrikaans house built on connection and warmth.',
     previewAudio: '',
-    spotifyUrl: '#',
+    spotifyUrl: 'https://open.spotify.com/album/55drrjGCXBFyai89shoHwP',
     appleMusicUrl: 'https://music.apple.com/us/album/tussen-ons-single/6781419570',
     youtubeUrl: 'https://www.youtube.com/watch?v=mA15-i9b19g&list=OLAK5uy_kzdQC1dMRu8nasTmFBXLoN7YkDo7Vmitk',
     distrokidUrl: ''
@@ -45,7 +45,7 @@ window.WK_RELEASES = [
     coverImage: './assets/images/op-my-vel-cover.jpg',
     description: 'Under your skin. A festival-ready groove with driving energy and crowd momentum.',
     previewAudio: '',
-    spotifyUrl: '#',
+    spotifyUrl: 'https://open.spotify.com/album/5kr43bP06Ex6zwRiEXpJoX',
     appleMusicUrl: 'https://music.apple.com/us/album/op-my-vel-single/6787744183',
     youtubeUrl: 'https://www.youtube.com/watch?v=hsf3ULHeW9U&list=OLAK5uy_mIPwl3mnuoNVPKmBwhK1DRrVnOoIHq_Tw',
     distrokidUrl: ''
@@ -56,7 +56,7 @@ window.WK_RELEASES = [
     coverImage: './assets/images/ons-word-een-cover.jpg',
     description: 'We become one. A hypnotic AfriHuis anthem where rhythm and heritage merge into something new.',
     previewAudio: '',
-    spotifyUrl: '#',
+    spotifyUrl: 'https://open.spotify.com/album/22ddqLCGBM5XV6FLfrrQej',
     appleMusicUrl: 'https://music.apple.com/us/album/ons-word-een-single/6778684292',
     youtubeUrl: 'https://www.youtube.com/watch?v=75LOkjFzhV0&list=OLAK5uy_nkWLtq4AEvafzhU0eW2ToInFTomEFMuuU',
     distrokidUrl: ''
@@ -67,7 +67,7 @@ window.WK_RELEASES = [
     coverImage: './assets/images/lank-saam-cover.jpg',
     description: 'Together for the long run. Vinyl warmth, coffee-heart latte art and a groove that stays.',
     previewAudio: '',
-    spotifyUrl: '#',
+    spotifyUrl: 'https://open.spotify.com/album/3h2OHLYtnqeBIAPbsgym3i',
     appleMusicUrl: 'https://music.apple.com/us/album/lank-saam-single/6777885570',
     youtubeUrl: 'https://www.youtube.com/watch?v=-tZcydus-FY&list=OLAK5uy_m4Qosf5XpCB_8DgNfaSnqnZ6ep83l4fVU',
     distrokidUrl: ''
@@ -78,7 +78,7 @@ window.WK_RELEASES = [
     coverImage: './assets/images/hart-klop-cover.jpg',
     description: 'Heartbeat. The pulse of espresso steam and a bassline that matches your heart rate.',
     previewAudio: '',
-    spotifyUrl: '#',
+    spotifyUrl: 'https://open.spotify.com/album/7CUVVZ7sRwxXA9KoYh8v5w',
     appleMusicUrl: 'https://music.apple.com/us/album/hart-klop-single/6786936627',
     youtubeUrl: 'https://www.youtube.com/watch?v=heM_PBrWdAc&list=OLAK5uy_mO4MBqSWidW9GbHfguNzbHT6QloOxI67g',
     distrokidUrl: ''
@@ -90,7 +90,7 @@ window.WK_RELEASES = [
     coverImage: './assets/images/afrikaanse-meisie-cover.jpg',
     description: 'Golden hour on the platteland — sunset decks, wheat fields and an Afrikaans girl in the distance.',
     previewAudio: '',
-    spotifyUrl: '#',
+    spotifyUrl: 'https://open.spotify.com/album/776bKo5gZc2yEAWsuKJsn3',
     appleMusicUrl: 'https://music.apple.com/us/album/afrikaanse-meisie-single/6779954422',
     youtubeUrl: 'https://www.youtube.com/channel/UC-DKs3u8TDkdm8kb-ivBdnA',
     distrokidUrl: ''
