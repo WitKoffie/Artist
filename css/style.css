@@ -833,6 +833,15 @@ body.sound-on .sound-hint { display: none; }
   text-transform: uppercase;
   font-weight: 600;
 }
+.release-artist {
+  display: block;
+  font-size: 0.82em;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-amber);
+  opacity: 0.8;
+  margin-top: 0.15em;
+}
 .release-card p.desc { font-size: 0.9rem; color: rgba(245, 232, 208, 0.65); flex-grow: 1; }
 
 .platform-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }

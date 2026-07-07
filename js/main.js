@@ -201,7 +201,16 @@
       const player = featuredMount.querySelector('[data-slot="player"]');
       const links = featuredMount.querySelector('[data-slot="links"]');
       if (art) { art.src = featured.coverImage; art.alt = featured.title + ' cover art'; art.onerror = function() { this.onerror = null; this.src = './assets/images/release-placeholder.jpg'; }; }
-      if (title) title.textContent = featured.title;
+      if (title) {
+        title.textContent = featured.title;
+        if (featured.artist) {
+          const sub = document.createElement('span');
+          sub.className = 'release-artist';
+          sub.textContent = featured.artist;
+          title.appendChild(document.createElement('br'));
+          title.appendChild(sub);
+        }
+      }
       if (date) date.textContent = featured.releaseDate;
       if (desc) desc.textContent = featured.description;
       if (player) player.appendChild(playerRow('featured-release', featured.previewAudio, featured.title));
@@ -227,6 +236,13 @@
         body.className = 'body';
         const h3 = document.createElement('h3');
         h3.textContent = r.title;
+        if (r.artist) {
+          const sub = document.createElement('span');
+          sub.className = 'release-artist';
+          sub.textContent = r.artist;
+          h3.appendChild(document.createElement('br'));
+          h3.appendChild(sub);
+        }
         const date = document.createElement('span');
         date.className = 'release-date';
         date.textContent = r.releaseDate;
