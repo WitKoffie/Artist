@@ -24,7 +24,7 @@ window.WK_RELEASES = [
     previewAudio: '',
     spotifyUrl: '#',
     appleMusicUrl: '#',
-    youtubeUrl: '#',
+    youtubeUrl: 'https://www.youtube.com/watch?v=zr05J2wnM7E&list=OLAK5uy_mfExxbAkSIgebfZpuER0t0X1W0txW8N4Q',
     distrokidUrl: ''
   },
   {
@@ -36,7 +36,7 @@ window.WK_RELEASES = [
     previewAudio: '',
     spotifyUrl: '#',
     appleMusicUrl: '#',
-    youtubeUrl: '#',
+    youtubeUrl: 'https://www.youtube.com/watch?v=mA15-i9b19g&list=OLAK5uy_kzdQC1dMRu8nasTmFBXLoN7YkDo7Vmitk',
     distrokidUrl: ''
   },
   {
@@ -47,7 +47,7 @@ window.WK_RELEASES = [
     previewAudio: '',
     spotifyUrl: '#',
     appleMusicUrl: '#',
-    youtubeUrl: '#',
+    youtubeUrl: 'https://www.youtube.com/watch?v=hsf3ULHeW9U&list=OLAK5uy_mIPwl3mnuoNVPKmBwhK1DRrVnOoIHq_Tw',
     distrokidUrl: ''
   },
   {
@@ -58,7 +58,7 @@ window.WK_RELEASES = [
     previewAudio: '',
     spotifyUrl: '#',
     appleMusicUrl: '#',
-    youtubeUrl: '#',
+    youtubeUrl: 'https://www.youtube.com/watch?v=75LOkjFzhV0&list=OLAK5uy_nkWLtq4AEvafzhU0eW2ToInFTomEFMuuU',
     distrokidUrl: ''
   },
   {
@@ -69,7 +69,7 @@ window.WK_RELEASES = [
     previewAudio: '',
     spotifyUrl: '#',
     appleMusicUrl: '#',
-    youtubeUrl: '#',
+    youtubeUrl: 'https://www.youtube.com/watch?v=-tZcydus-FY&list=OLAK5uy_m4Qosf5XpCB_8DgNfaSnqnZ6ep83l4fVU',
     distrokidUrl: ''
   },
   {
@@ -80,7 +80,7 @@ window.WK_RELEASES = [
     previewAudio: '',
     spotifyUrl: '#',
     appleMusicUrl: '#',
-    youtubeUrl: '#',
+    youtubeUrl: 'https://www.youtube.com/watch?v=heM_PBrWdAc&list=OLAK5uy_mO4MBqSWidW9GbHfguNzbHT6QloOxI67g',
     distrokidUrl: ''
   },
   {
@@ -92,7 +92,7 @@ window.WK_RELEASES = [
     previewAudio: '',
     spotifyUrl: '#',
     appleMusicUrl: '#',
-    youtubeUrl: '#',
+    youtubeUrl: 'https://www.youtube.com/channel/UC-DKs3u8TDkdm8kb-ivBdnA',
     distrokidUrl: ''
   },
   {
