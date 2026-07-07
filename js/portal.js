@@ -205,18 +205,6 @@
   handleShape.lineTo(hW, -hH + hR);
   handleShape.quadraticCurveTo(hW, -hH, hW - hR, -hH);
   handleShape.lineTo(0, -hH);
-  // inner cutout
-  var wall = 0.065;
-  var cutW = hW - wall, cutH = hH - wall, cutR = hR * 0.5;
-  var hole = new THREE.Path();
-  hole.moveTo(0, cutH);
-  hole.lineTo(cutW - cutR, cutH);
-  hole.quadraticCurveTo(cutW, cutH, cutW, cutH - cutR);
-  hole.lineTo(cutW, -cutH + cutR);
-  hole.quadraticCurveTo(cutW, -cutH, cutW - cutR, -cutH);
-  hole.lineTo(0, -cutH);
-  hole.lineTo(0, cutH);
-  handleShape.holes.push(hole);
   var handleGeo = new THREE.ExtrudeGeometry(handleShape, {
     depth: 0.08, bevelEnabled: true, bevelThickness: 0.02,
     bevelSize: 0.02, bevelSegments: 3
