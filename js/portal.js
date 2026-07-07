@@ -133,6 +133,11 @@
   }
 
   /* ---- build the portal --------------------------------------------------- */
+  var CUP_R = 1.7;
+  var RIM_THICK = 0.14;
+  var OUTER_RING_R = 2.45;
+
+  // Ambient glow behind everything
   var halo = new THREE.Mesh(
     new THREE.PlaneGeometry(5.6, 5.6),
     new THREE.MeshBasicMaterial({
@@ -143,14 +148,15 @@
   halo.position.z = -0.6;
   portal.add(halo);
 
+  // Golden outer ring (the circle around the cup)
   var outerRing = new THREE.Mesh(
-    new THREE.TorusGeometry(2.45, 0.022, 12, 160),
+    new THREE.TorusGeometry(OUTER_RING_R, 0.022, 12, 160),
     new THREE.MeshBasicMaterial({ color: COLORS.amber })
   );
   portal.add(outerRing);
 
   var outerRingGlow = new THREE.Mesh(
-    new THREE.RingGeometry(2.28, 2.62, 128),
+    new THREE.RingGeometry(OUTER_RING_R - 0.17, OUTER_RING_R + 0.17, 128),
     new THREE.MeshBasicMaterial({
       color: COLORS.amber, transparent: true, opacity: 0.16,
       depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide
@@ -159,8 +165,50 @@
   outerRingGlow.position.z = -0.01;
   portal.add(outerRingGlow);
 
+  // Dark fill between outer ring and cup (the black gap)
+  var darkFill = new THREE.Mesh(
+    new THREE.RingGeometry(CUP_R + RIM_THICK + 0.02, OUTER_RING_R - 0.03, 128),
+    new THREE.MeshBasicMaterial({
+      color: 0x0a0806, side: THREE.DoubleSide
+    })
+  );
+  darkFill.position.z = 0.01;
+  portal.add(darkFill);
+
+  // Cup rim (white/cream ring around coffee)
+  var cupRimMat = new THREE.MeshBasicMaterial({ color: 0xf0e8da });
+  var cupRim = new THREE.Mesh(
+    new THREE.TorusGeometry(CUP_R + RIM_THICK * 0.5, RIM_THICK * 0.5, 16, 128),
+    cupRimMat
+  );
+  cupRim.position.z = 0.18;
+  portal.add(cupRim);
+
+  // Inner rim highlight
+  var rimHighlight = new THREE.Mesh(
+    new THREE.TorusGeometry(CUP_R + RIM_THICK * 0.5, RIM_THICK * 0.52, 16, 128),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff, transparent: true, opacity: 0.12,
+      depthWrite: false, blending: THREE.AdditiveBlending
+    })
+  );
+  rimHighlight.position.z = 0.22;
+  portal.add(rimHighlight);
+
+  // Handle ("ear") — small C-shape on the right
+  var handleCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(CUP_R + RIM_THICK * 0.3, 0.25, 0.16),
+    new THREE.Vector3(CUP_R + 0.55, 0.35, 0.16),
+    new THREE.Vector3(CUP_R + 0.7, 0.0, 0.16),
+    new THREE.Vector3(CUP_R + 0.55, -0.35, 0.16),
+    new THREE.Vector3(CUP_R + RIM_THICK * 0.3, -0.25, 0.16)
+  ]);
+  var handleGeo = new THREE.TubeGeometry(handleCurve, 24, 0.06, 8, false);
+  var handle = new THREE.Mesh(handleGeo, cupRimMat);
+  portal.add(handle);
+
   // Coffee surface
-  var COFFEE_R = 2.0;
+  var COFFEE_R = CUP_R;
   var DISC_RINGS = 40;
   var DISC_SEGS = 80;
   var coneGeo = makeDiscGeometry(COFFEE_R, DISC_RINGS, DISC_SEGS);
@@ -171,7 +219,7 @@
   for (var i = 0; i < vertCount; i++) {
     var x = pos.getX(i), y = pos.getY(i);
     var r = Math.sqrt(x * x + y * y) / COFFEE_R;
-    var z = -0.42 * (1 - r) * (1 - r);
+    var z = -0.32 * (1 - r) * (1 - r);
     pos.setZ(i, z);
     baseZ[i] = z;
   }
@@ -189,7 +237,7 @@
   var PULSES = 3, pulses = [];
   for (var i = 0; i < PULSES; i++) {
     var m = new THREE.Mesh(
-      new THREE.RingGeometry(0.96, 1.0, 96),
+      new THREE.RingGeometry(0.8, 0.84, 96),
       new THREE.MeshBasicMaterial({
         color: COLORS.amber, transparent: true, opacity: 0,
         depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide
@@ -290,7 +338,7 @@
     if (!running) return;
     t += 0.016;
 
-    coffee.rotation.z -= 0.0035 + (audioPlaying ? 0.006 : 0);
+    coffee.rotation.z -= 0.001 + (audioPlaying ? 0.003 : 0);
 
     var energy = soundActive ? (audioPlaying ? 1 : 0.55) : 0.25;
     var breathe = 1 + Math.sin(t * 1.4) * 0.012 * (1 + energy);
@@ -298,7 +346,6 @@
 
     portal.rotation.x += (targetRX - portal.rotation.x) * 0.05;
     portal.rotation.y += (targetRY - portal.rotation.y) * 0.05;
-    portal.rotation.z += 0.0006;
     camera.position.z = 9.3 + scrollDepth * 1.6;
     portal.position.y = scrollDepth * 0.7;
 
