@@ -40,148 +40,227 @@
   resize();
   window.addEventListener('resize', resize);
 
-  /* colors */
   var CYAN = new THREE.Color(0x00e5ff);
   var MAGENTA = new THREE.Color(0xff2aaa);
   var VIOLET = new THREE.Color(0x8b5cf6);
-  var DEEP = new THREE.Color(0x150a28);
 
-  /* ambient glow */
-  var glowGeo = new THREE.RingGeometry(2.4, 3.2, 64);
-  var glowMat = new THREE.MeshBasicMaterial({ color: VIOLET, transparent: true, opacity: 0.08, side: THREE.DoubleSide });
+  /* ── Vortex disc with custom shader ── */
+  var vortexUniforms = {
+    uTime: { value: 0 },
+    uAudio: { value: 0 },
+    uMouse: { value: new THREE.Vector2(0.5, 0.5) }
+  };
+
+  var vortexVert = [
+    'varying vec2 vUv;',
+    'void main() {',
+    '  vUv = uv;',
+    '  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+    '}'
+  ].join('\n');
+
+  var vortexFrag = [
+    'precision highp float;',
+    'uniform float uTime;',
+    'uniform float uAudio;',
+    'uniform vec2 uMouse;',
+    'varying vec2 vUv;',
+    '',
+    'vec3 cyan    = vec3(0.0, 0.898, 1.0);',
+    'vec3 magenta = vec3(1.0, 0.165, 0.667);',
+    'vec3 violet  = vec3(0.545, 0.361, 0.965);',
+    'vec3 deep    = vec3(0.02, 0.008, 0.06);',
+    '',
+    'float hash(vec2 p) {',
+    '  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);',
+    '}',
+    '',
+    'float noise(vec2 p) {',
+    '  vec2 i = floor(p);',
+    '  vec2 f = fract(p);',
+    '  f = f * f * (3.0 - 2.0 * f);',
+    '  float a = hash(i);',
+    '  float b = hash(i + vec2(1.0, 0.0));',
+    '  float c = hash(i + vec2(0.0, 1.0));',
+    '  float d = hash(i + vec2(1.0, 1.0));',
+    '  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);',
+    '}',
+    '',
+    'float fbm(vec2 p) {',
+    '  float v = 0.0;',
+    '  float a = 0.5;',
+    '  for (int i = 0; i < 5; i++) {',
+    '    v += a * noise(p);',
+    '    p *= 2.0;',
+    '    a *= 0.5;',
+    '  }',
+    '  return v;',
+    '}',
+    '',
+    'void main() {',
+    '  vec2 uv = vUv - 0.5;',
+    '  float dist = length(uv);',
+    '  float angle = atan(uv.y, uv.x);',
+    '',
+    '  // Circular mask — hard edge at disc boundary',
+    '  float mask = 1.0 - smoothstep(0.48, 0.5, dist);',
+    '',
+    '  // Spiral arms',
+    '  float speed = 0.15 + uAudio * 0.25;',
+    '  float spiral = sin(angle * 3.0 - dist * 12.0 + uTime * speed) * 0.5 + 0.5;',
+    '  float spiral2 = sin(angle * 5.0 + dist * 8.0 - uTime * speed * 1.3) * 0.5 + 0.5;',
+    '',
+    '  // Nebula noise warped by spiral',
+    '  vec2 warp = vec2(',
+    '    cos(angle + uTime * 0.1) * dist,',
+    '    sin(angle + uTime * 0.1) * dist',
+    '  );',
+    '  float neb = fbm(warp * 4.0 + uTime * 0.05);',
+    '  float neb2 = fbm(warp * 6.0 - uTime * 0.08 + 3.0);',
+    '',
+    '  // Color mixing',
+    '  vec3 col = deep;',
+    '  col = mix(col, violet * 0.4, neb * smoothstep(0.4, 0.1, dist));',
+    '  col = mix(col, cyan * 0.6, spiral * smoothstep(0.45, 0.15, dist) * 0.5);',
+    '  col = mix(col, magenta * 0.5, spiral2 * smoothstep(0.4, 0.2, dist) * 0.4);',
+    '  col += violet * 0.15 * neb2 * smoothstep(0.35, 0.1, dist);',
+    '',
+    '  // Core glow',
+    '  float core = smoothstep(0.15, 0.0, dist);',
+    '  col += cyan * core * (0.8 + uAudio * 0.6);',
+    '',
+    '  // Inner ring glow',
+    '  float ring1 = smoothstep(0.02, 0.0, abs(dist - 0.18));',
+    '  float ring2 = smoothstep(0.015, 0.0, abs(dist - 0.32));',
+    '  col += magenta * ring1 * 0.4;',
+    '  col += cyan * ring2 * 0.3;',
+    '',
+    '  // Edge glow — rim light',
+    '  float rim = smoothstep(0.35, 0.49, dist) * smoothstep(0.5, 0.47, dist);',
+    '  col += cyan * rim * (0.3 + 0.2 * sin(uTime * 0.5));',
+    '',
+    '  // Mouse proximity highlight',
+    '  vec2 mOff = uv - (uMouse - 0.5) * 0.3;',
+    '  float mDist = length(mOff);',
+    '  col += violet * 0.12 * smoothstep(0.3, 0.0, mDist);',
+    '',
+    '  // Sparkle layer',
+    '  float sparkle = hash(uv * 80.0 + floor(uTime * 3.0));',
+    '  sparkle = pow(sparkle, 20.0) * smoothstep(0.45, 0.1, dist);',
+    '  col += vec3(0.8, 0.9, 1.0) * sparkle * (0.6 + uAudio * 0.8);',
+    '',
+    '  gl_FragColor = vec4(col * mask, mask * 0.95);',
+    '}'
+  ].join('\n');
+
+  var discGeo = new THREE.CircleGeometry(2.2, 96);
+  var discMat = new THREE.ShaderMaterial({
+    uniforms: vortexUniforms,
+    vertexShader: vortexVert,
+    fragmentShader: vortexFrag,
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+  var disc = new THREE.Mesh(discGeo, discMat);
+  disc.rotation.x = -Math.PI / 2;
+  scene.add(disc);
+
+  /* ── Outer energy ring ── */
+  var outerGeo = new THREE.TorusGeometry(2.2, 0.035, 16, 128);
+  var outerMat = new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.7 });
+  var outerRing = new THREE.Mesh(outerGeo, outerMat);
+  outerRing.rotation.x = -Math.PI / 2;
+  scene.add(outerRing);
+
+  /* ── Inner ring ── */
+  var innerGeo = new THREE.TorusGeometry(1.6, 0.02, 16, 96);
+  var innerMat = new THREE.MeshBasicMaterial({ color: MAGENTA, transparent: true, opacity: 0.45 });
+  var innerRing = new THREE.Mesh(innerGeo, innerMat);
+  innerRing.rotation.x = -Math.PI / 2;
+  scene.add(innerRing);
+
+  /* ── Mid ring ── */
+  var midGeo = new THREE.TorusGeometry(1.0, 0.015, 16, 64);
+  var midMat = new THREE.MeshBasicMaterial({ color: VIOLET, transparent: true, opacity: 0.3 });
+  var midRing = new THREE.Mesh(midGeo, midMat);
+  midRing.rotation.x = -Math.PI / 2;
+  scene.add(midRing);
+
+  /* ── Ambient glow halo ── */
+  var glowGeo = new THREE.RingGeometry(2.0, 2.8, 64);
+  var glowMat = new THREE.MeshBasicMaterial({ color: VIOLET, transparent: true, opacity: 0.06, side: THREE.DoubleSide });
   var glow = new THREE.Mesh(glowGeo, glowMat);
   glow.rotation.x = -Math.PI / 2;
   glow.position.y = -0.02;
   scene.add(glow);
 
-  /* outer ring */
-  var outerGeo = new THREE.TorusGeometry(2.2, 0.04, 16, 80);
-  var outerMat = new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.6 });
-  var outerRing = new THREE.Mesh(outerGeo, outerMat);
-  outerRing.rotation.x = -Math.PI / 2;
-  scene.add(outerRing);
+  /* ── Orbiting particles — two layers ── */
+  function createParticleLayer(count, minR, maxR, size, baseOpacity) {
+    var geo = new THREE.BufferGeometry();
+    var pos = new Float32Array(count * 3);
+    var cols = new Float32Array(count * 3);
+    var speeds = [];
+    var radii = [];
 
-  /* inner ring */
-  var innerGeo = new THREE.TorusGeometry(1.6, 0.025, 16, 64);
-  var innerMat = new THREE.MeshBasicMaterial({ color: MAGENTA, transparent: true, opacity: 0.4 });
-  var innerRing = new THREE.Mesh(innerGeo, innerMat);
-  innerRing.rotation.x = -Math.PI / 2;
-  scene.add(innerRing);
+    for (var i = 0; i < count; i++) {
+      var angle = Math.random() * Math.PI * 2;
+      var r = minR + Math.random() * (maxR - minR);
+      pos[i * 3] = Math.cos(angle) * r;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 0.5;
+      pos[i * 3 + 2] = Math.sin(angle) * r;
+      speeds.push(0.2 + Math.random() * 0.9);
+      radii.push(r);
 
-  /* vortex disc - procedural texture */
-  var texSize = 1024;
-  var texCanvas = document.createElement('canvas');
-  texCanvas.width = texSize;
-  texCanvas.height = texSize;
-  var ctx = texCanvas.getContext('2d');
+      var col = Math.random() > 0.6 ? CYAN : (Math.random() > 0.5 ? MAGENTA : VIOLET);
+      cols[i * 3] = col.r;
+      cols[i * 3 + 1] = col.g;
+      cols[i * 3 + 2] = col.b;
+    }
 
-  var cx = texSize / 2;
-  var cy = texSize / 2;
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
 
-  /* base gradient - deep void center, nebula edges */
-  var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cx);
-  grad.addColorStop(0, '#050208');
-  grad.addColorStop(0.3, '#0a0418');
-  grad.addColorStop(0.6, '#150a28');
-  grad.addColorStop(0.85, '#1a0a2e');
-  grad.addColorStop(1, '#0a0418');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, texSize, texSize);
-
-  /* spiral grooves */
-  for (var ring = 0; ring < 30; ring++) {
-    var radius = 40 + ring * 15;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.strokeStyle = ring % 3 === 0
-      ? 'rgba(0, 229, 255, 0.12)'
-      : ring % 3 === 1
-        ? 'rgba(255, 42, 170, 0.08)'
-        : 'rgba(139, 92, 246, 0.06)';
-    ctx.lineWidth = ring % 2 === 0 ? 1.5 : 0.8;
-    ctx.stroke();
-  }
-
-  /* center eye */
-  var eyeGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60);
-  eyeGrad.addColorStop(0, 'rgba(0, 229, 255, 0.5)');
-  eyeGrad.addColorStop(0.4, 'rgba(139, 92, 246, 0.3)');
-  eyeGrad.addColorStop(1, 'transparent');
-  ctx.fillStyle = eyeGrad;
-  ctx.fillRect(cx - 60, cy - 60, 120, 120);
-
-  /* center dot */
-  ctx.beginPath();
-  ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-  ctx.fillStyle = '#00e5ff';
-  ctx.fill();
-
-  var texture = new THREE.CanvasTexture(texCanvas);
-  texture.needsUpdate = true;
-
-  var discGeo = new THREE.CircleGeometry(2.15, 80);
-  var discMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.95, side: THREE.DoubleSide });
-  var disc = new THREE.Mesh(discGeo, discMat);
-  disc.rotation.x = -Math.PI / 2;
-  scene.add(disc);
-
-  /* energy particles orbiting */
-  var particleCount = 60;
-  var particleGeo = new THREE.BufferGeometry();
-  var positions = new Float32Array(particleCount * 3);
-  var pColors = new Float32Array(particleCount * 3);
-  var particleSpeeds = [];
-  var particleRadii = [];
-
-  for (var i = 0; i < particleCount; i++) {
-    var angle = Math.random() * Math.PI * 2;
-    var r = 0.5 + Math.random() * 1.8;
-    positions[i * 3] = Math.cos(angle) * r;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 0.6;
-    positions[i * 3 + 2] = Math.sin(angle) * r;
-    particleSpeeds.push(0.3 + Math.random() * 0.8);
-    particleRadii.push(r);
-
-    var col = Math.random() > 0.5 ? CYAN : (Math.random() > 0.5 ? MAGENTA : VIOLET);
-    pColors[i * 3] = col.r;
-    pColors[i * 3 + 1] = col.g;
-    pColors[i * 3 + 2] = col.b;
-  }
-
-  particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  particleGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
-
-  var particleMat = new THREE.PointsMaterial({
-    size: 0.04,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.7,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
-  });
-  var particles = new THREE.Points(particleGeo, particleMat);
-  scene.add(particles);
-
-  /* pulse rings */
-  var pulseRings = [];
-  for (var p = 0; p < 3; p++) {
-    var pr = 0.8 + p * 0.6;
-    var pGeo = new THREE.TorusGeometry(pr, 0.01, 8, 64);
-    var pMat = new THREE.MeshBasicMaterial({
-      color: p === 0 ? CYAN : (p === 1 ? MAGENTA : VIOLET),
+    var mat = new THREE.PointsMaterial({
+      size: size,
+      vertexColors: true,
       transparent: true,
-      opacity: 0.2
+      opacity: baseOpacity,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    return { mesh: new THREE.Points(geo, mat), speeds: speeds, radii: radii, count: count };
+  }
+
+  var innerParticles = createParticleLayer(40, 0.3, 1.5, 0.04, 0.8);
+  var outerParticles = createParticleLayer(50, 1.5, 2.4, 0.03, 0.5);
+  scene.add(innerParticles.mesh);
+  scene.add(outerParticles.mesh);
+
+  /* ── Pulse rings ── */
+  var pulseRings = [];
+  var pulseColors = [CYAN, MAGENTA, VIOLET, CYAN];
+  for (var p = 0; p < 4; p++) {
+    var pr = 0.6 + p * 0.45;
+    var pGeo = new THREE.TorusGeometry(pr, 0.008, 8, 80);
+    var pMat = new THREE.MeshBasicMaterial({
+      color: pulseColors[p],
+      transparent: true,
+      opacity: 0.15
     });
     var pMesh = new THREE.Mesh(pGeo, pMat);
     pMesh.rotation.x = -Math.PI / 2;
     scene.add(pMesh);
-    pulseRings.push({ mesh: pMesh, baseRadius: pr, speed: 0.5 + p * 0.3 });
+    pulseRings.push({ mesh: pMesh, baseRadius: pr, speed: 0.4 + p * 0.25, phase: p * 1.2 });
   }
 
-  /* interaction state */
+  /* ── Interaction state ── */
   var mouse = { x: 0.5, y: 0.5 };
+  var smoothMouse = { x: 0.5, y: 0.5 };
   var isAudioPlaying = false;
-  var rotationSpeed = 0.15;
+  var audioLevel = 0;
+  var targetAudioLevel = 0;
 
   container.addEventListener('pointermove', function (e) {
     var rect = container.getBoundingClientRect();
@@ -189,48 +268,61 @@
     mouse.y = (e.clientY - rect.top) / rect.height;
   });
 
-  window.addEventListener('ds:audio-playing', function () { isAudioPlaying = true; });
-  window.addEventListener('ds:audio-stopped', function () { isAudioPlaying = false; });
-  window.addEventListener('wk:audio-playing', function () { isAudioPlaying = true; });
-  window.addEventListener('wk:audio-stopped', function () { isAudioPlaying = false; });
+  window.addEventListener('ds:audio-playing', function () { isAudioPlaying = true; targetAudioLevel = 1; });
+  window.addEventListener('ds:audio-stopped', function () { isAudioPlaying = false; targetAudioLevel = 0; });
+  window.addEventListener('wk:audio-playing', function () { isAudioPlaying = true; targetAudioLevel = 1; });
+  window.addEventListener('wk:audio-stopped', function () { isAudioPlaying = false; targetAudioLevel = 0; });
 
-  /* animation loop */
+  /* ── Animation loop ── */
   var clock = new THREE.Clock();
   var isVisible = true;
+
+  function animateParticleLayer(layer, t, audioMul) {
+    var posArr = layer.mesh.geometry.attributes.position.array;
+    for (var i = 0; i < layer.count; i++) {
+      var idx = i * 3;
+      var x = posArr[idx];
+      var z = posArr[idx + 2];
+      var angle = Math.atan2(z, x) + layer.speeds[i] * 0.012 * audioMul;
+      posArr[idx] = Math.cos(angle) * layer.radii[i];
+      posArr[idx + 2] = Math.sin(angle) * layer.radii[i];
+      posArr[idx + 1] = Math.sin(t * layer.speeds[i] * 0.8 + i * 0.5) * 0.12;
+    }
+    layer.mesh.geometry.attributes.position.needsUpdate = true;
+  }
 
   function animate() {
     if (!isVisible) { requestAnimationFrame(animate); return; }
     var t = clock.getElapsedTime();
-    var speed = isAudioPlaying ? 0.4 : rotationSpeed;
+
+    audioLevel += (targetAudioLevel - audioLevel) * 0.08;
+    smoothMouse.x += (mouse.x - smoothMouse.x) * 0.05;
+    smoothMouse.y += (mouse.y - smoothMouse.y) * 0.05;
+
+    var speed = 0.15 + audioLevel * 0.3;
+
+    vortexUniforms.uTime.value = t;
+    vortexUniforms.uAudio.value = audioLevel;
+    vortexUniforms.uMouse.value.set(smoothMouse.x, smoothMouse.y);
 
     if (!reducedMotion) {
-      disc.rotation.z = t * speed;
-      outerRing.rotation.z = -t * speed * 0.5;
-      innerRing.rotation.z = t * speed * 0.7;
+      outerRing.rotation.z = -t * speed * 0.4;
+      innerRing.rotation.z = t * speed * 0.6;
+      midRing.rotation.z = -t * speed * 0.8;
     }
 
-    /* particles orbit */
-    var posArr = particleGeo.attributes.position.array;
-    for (var i = 0; i < particleCount; i++) {
-      var idx = i * 3;
-      var x = posArr[idx];
-      var z = posArr[idx + 2];
-      var angle = Math.atan2(z, x) + particleSpeeds[i] * 0.01 * (isAudioPlaying ? 2 : 1);
-      posArr[idx] = Math.cos(angle) * particleRadii[i];
-      posArr[idx + 2] = Math.sin(angle) * particleRadii[i];
-      posArr[idx + 1] = Math.sin(t * particleSpeeds[i] + i) * 0.15;
-    }
-    particleGeo.attributes.position.needsUpdate = true;
+    var audioMul = isAudioPlaying ? 2.5 : 1;
+    animateParticleLayer(innerParticles, t, audioMul);
+    animateParticleLayer(outerParticles, t, audioMul * 0.7);
 
-    /* pulse rings */
     pulseRings.forEach(function (pr) {
-      var scale = 1 + Math.sin(t * pr.speed) * 0.08 * (isAudioPlaying ? 2 : 1);
+      var wave = Math.sin(t * pr.speed + pr.phase);
+      var scale = 1 + wave * 0.06 * (1 + audioLevel);
       pr.mesh.scale.set(scale, scale, 1);
-      pr.mesh.material.opacity = 0.15 + Math.sin(t * pr.speed) * 0.1;
+      pr.mesh.material.opacity = 0.1 + wave * 0.08 + audioLevel * 0.1;
     });
 
-    /* glow response to mouse */
-    glow.material.opacity = 0.06 + (1 - Math.abs(mouse.x - 0.5) * 2) * 0.06;
+    glow.material.opacity = 0.04 + (1 - Math.abs(smoothMouse.x - 0.5) * 2) * 0.06 + audioLevel * 0.04;
 
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
@@ -244,7 +336,10 @@
   animate();
 
   window.DSPortal = {
-    setSoundActive: function (on) { isAudioPlaying = on; }
+    setSoundActive: function (on) {
+      isAudioPlaying = on;
+      targetAudioLevel = on ? 1 : 0;
+    }
   };
   window.WKPortal = window.DSPortal;
 })();
