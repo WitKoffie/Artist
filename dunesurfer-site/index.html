@@ -16,7 +16,21 @@
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
 </head>
-<body>
+<body class="loading">
+  <!-- Preloader -->
+  <div class="preloader" aria-hidden="true">
+    <div class="preloader-ring"></div>
+    <span class="preloader-brand">DuneSurfer</span>
+    <div class="preloader-bar"></div>
+    <span class="preloader-genre">Psydance</span>
+  </div>
+
+  <!-- Ambient particles -->
+  <canvas class="particle-canvas" aria-hidden="true"></canvas>
+
+  <!-- Animated film grain -->
+  <div class="film-grain" aria-hidden="true"></div>
+
   <div class="scroll-progress" aria-hidden="true"></div>
   <a class="skip-link" href="#main">Skip to content</a>
 
@@ -58,13 +72,12 @@
   <main id="main">
     <section class="hero" aria-label="DuneSurfer introduction">
       <div class="hero-bg" aria-hidden="true"></div>
-      <div class="hero-grain" aria-hidden="true"></div>
 
       <div class="container hero-grid">
         <div class="hero-copy">
-          <span class="hero-eyebrow"><span class="dot" aria-hidden="true"></span>Psydance</span>
-          <h1 class="hero-title">DuneSurfer</h1>
-          <div class="hero-tagline-wrap">
+          <span class="hero-eyebrow hero-stagger" style="--stagger: 2.2s"><span class="dot" aria-hidden="true"></span>Psydance</span>
+          <h1 class="hero-title hero-stagger" style="--stagger: 2.4s">DuneSurfer</h1>
+          <div class="hero-tagline-wrap hero-stagger" style="--stagger: 2.6s">
             <div class="tagline-col">
               <p class="hero-tagline">Desert Bass</p>
               <p class="hero-subtitle"><em>Ancient Rhythm</em></p>
@@ -75,9 +88,9 @@
               <p class="hero-subtitle"><em>Future Light</em></p>
             </div>
           </div>
-          <p class="hero-sub">Hypnotic bass, euphoric pressure, ancient rhythm, future light. Psydance from the dunes to the stars.</p>
+          <p class="hero-sub hero-stagger" style="--stagger: 2.8s">Hypnotic bass, euphoric pressure, ancient rhythm, future light. Psydance from the dunes to the stars.</p>
 
-          <div class="hero-actions">
+          <div class="hero-actions hero-stagger" style="--stagger: 3s">
             <button id="enter-sound" class="btn btn-primary" type="button">Enter The Vortex</button>
             <span class="sound-status" role="status"><span class="pulse-dot" aria-hidden="true"></span>Frequencies Active</span>
             <a class="btn btn-secondary" href="./music.html">Enter The Frequency</a>
@@ -85,7 +98,7 @@
           <p id="sound-live" class="visually-hidden" role="status" aria-live="polite"></p>
         </div>
 
-        <div class="portal-stage">
+        <div class="portal-stage hero-stagger" style="--stagger: 2.5s">
           <div id="sound-portal" aria-hidden="true"></div>
           <div class="portal-fallback">
             <img class="fallback-mark" src="./assets/images/dunesurfer-mark.png" alt="Glowing cosmic DuneSurfer mandala">
@@ -96,7 +109,9 @@
       <span class="scroll-cue" aria-hidden="true">Scroll</span>
     </section>
 
-    <section id="the-sound" aria-labelledby="sound-heading">
+    <hr class="glow-section-divider reveal" aria-hidden="true">
+
+    <section id="the-sound" class="section-cinematic mood-sound" aria-labelledby="sound-heading">
       <div class="container">
         <span class="section-kicker reveal">Listen closer</span>
         <h2 id="sound-heading" class="section-title reveal">The Frequencies</h2>
@@ -183,7 +198,9 @@
       </div>
     </section>
 
-    <section aria-labelledby="identity-heading" style="background: var(--color-abyss); border-block: 1px solid var(--color-line);">
+    <hr class="glow-section-divider reveal" aria-hidden="true">
+
+    <section class="section-cinematic mood-identity" aria-labelledby="identity-heading">
       <div class="container">
         <span class="section-kicker reveal">What is Psydance</span>
         <h2 id="identity-heading" class="section-title reveal">A Sound Between Earth, Body,<br>Stars And Rhythm.</h2>
@@ -224,7 +241,9 @@
       </div>
     </section>
 
-    <section aria-labelledby="featured-heading">
+    <hr class="glow-section-divider reveal" aria-hidden="true">
+
+    <section class="section-cinematic mood-release" aria-labelledby="featured-heading">
       <div class="container">
         <span class="section-kicker reveal">Now playing</span>
         <h2 id="featured-heading" class="section-title reveal">Featured Release</h2>
@@ -258,7 +277,9 @@
       </div>
     </section>
 
-    <section class="statement" aria-labelledby="statement-heading">
+    <hr class="glow-section-divider reveal" aria-hidden="true">
+
+    <section class="statement mood-statement" aria-labelledby="statement-heading">
       <div class="container">
         <h2 id="statement-heading" class="reveal">Psydance From The Dunes<br>To The Stars.</h2>
         <hr class="glow-divider">

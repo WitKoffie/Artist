@@ -5,6 +5,70 @@
   function $(sel, ctx) { return (ctx || document).querySelector(sel); }
   function $$(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); }
 
+  /* ======================== PRELOADER ======================== */
+  var preloader = $('.preloader');
+  if (preloader && !reducedMotion) {
+    var minTime = new Promise(function (r) { setTimeout(r, 2400); });
+    var fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+    Promise.all([minTime, fontsReady]).then(function () {
+      preloader.classList.add('done');
+      document.body.classList.remove('loading');
+    });
+  } else {
+    if (preloader) preloader.classList.add('done');
+    document.body.classList.remove('loading');
+  }
+
+  /* ======================== AMBIENT PARTICLES ======================== */
+  var particleCanvas = $('.particle-canvas');
+  if (particleCanvas && !reducedMotion) {
+    var pCtx = particleCanvas.getContext('2d');
+    var particles = [];
+    var pCount = window.innerWidth < 768 ? 30 : 60;
+    var pPaused = false;
+
+    function resizeParticles() {
+      particleCanvas.width = window.innerWidth;
+      particleCanvas.height = window.innerHeight;
+    }
+    resizeParticles();
+    window.addEventListener('resize', resizeParticles);
+
+    for (var pi = 0; pi < pCount; pi++) {
+      particles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        size: Math.random() * 1.5 + 0.5,
+        speedY: -(Math.random() * 0.3 + 0.1),
+        speedX: (Math.random() - 0.5) * 0.15,
+        opacity: Math.random() * 0.12 + 0.03
+      });
+    }
+
+    function drawParticles() {
+      if (pPaused) { requestAnimationFrame(drawParticles); return; }
+      pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.y < -10) { p.y = particleCanvas.height + 10; p.x = Math.random() * particleCanvas.width; }
+        if (p.x < -10) p.x = particleCanvas.width + 10;
+        if (p.x > particleCanvas.width + 10) p.x = -10;
+        pCtx.beginPath();
+        pCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        pCtx.fillStyle = 'rgba(255, 255, 255, ' + p.opacity + ')';
+        pCtx.fill();
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    requestAnimationFrame(drawParticles);
+
+    document.addEventListener('visibilitychange', function () {
+      pPaused = document.hidden;
+    });
+  }
+
   /* scroll progress bar */
   var progressBar = $('.scroll-progress');
   function onScrollProgress() {
@@ -43,14 +107,22 @@
     });
   }
 
-  /* reveal on scroll */
+  /* reveal on scroll — orchestrated stagger within each section */
   var revealEls = $$('.reveal');
   if ('IntersectionObserver' in window && !reducedMotion) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); }
+        if (!en.isIntersecting) return;
+
+        var section = en.target.closest('section') || en.target.parentElement;
+        var siblings = section ? Array.prototype.slice.call(section.querySelectorAll('.reveal:not(.visible)')) : [];
+        var idx = siblings.indexOf(en.target);
+        if (idx < 0) idx = 0;
+        en.target.style.setProperty('--reveal-delay', (idx * 0.1) + 's');
+        en.target.classList.add('visible');
+        io.unobserve(en.target);
       });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.1 });
     revealEls.forEach(function (el) { io.observe(el); });
   } else {
     revealEls.forEach(function (el) { el.classList.add('visible'); });

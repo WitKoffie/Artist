@@ -1,6 +1,5 @@
 /* ========================================================
-   DuneSurfer — Surfing Desert Mysticism Meeting Cosmic Frequencies
-   Psytrance artist website
+   DuneSurfer — Psydance From The Dunes To The Stars
    ======================================================== */
 
 /* ---------- Google Fonts ---------- */
@@ -21,6 +20,8 @@
   --color-line:        rgba(139, 92, 246, 0.15);
   --color-glow:        rgba(0, 229, 255, 0.40);
   --color-glow-mag:    rgba(255, 42, 170, 0.35);
+  --color-amber:       #C4841D;
+  --color-sand:        #8B6914;
 
   --font-display: 'Orbitron', sans-serif;
   --font-body:    'Space Grotesk', sans-serif;
@@ -125,11 +126,12 @@ section {
   margin-bottom: 2.5rem;
 }
 
-/* ---------- Scroll Reveal ---------- */
+/* ---------- Scroll Reveal (Orchestrated) ---------- */
 .reveal {
   opacity: 0;
   transform: translateY(32px);
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+  transition-delay: var(--reveal-delay, 0s);
 }
 .reveal.visible {
   opacity: 1;
@@ -381,7 +383,7 @@ section {
 
 .hero-title {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: clamp(3.5rem, 10vw, 7rem);
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: 0.04em;
@@ -390,6 +392,8 @@ section {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 0.75rem;
+  text-shadow: 0 0 80px rgba(0, 229, 255, 0.3);
+  filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.15));
 }
 
 .hero-tagline-wrap {
@@ -407,8 +411,8 @@ section {
 .hero-tagline {
   font-family: var(--font-display);
   font-size: clamp(0.75rem, 1.5vw, 0.95rem);
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: 400;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--color-stardust);
 }
@@ -1169,6 +1173,184 @@ section {
   .footer-bottom { flex-direction: column; gap: 0.3rem; text-align: center; }
 }
 
+/* ======================== PRELOADER ======================== */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--color-void);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0;
+  transition: opacity 0.8s ease, visibility 0.8s;
+}
+.preloader.done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.preloader-brand {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  background: linear-gradient(135deg, var(--color-starlight) 20%, var(--color-cyan) 50%, var(--color-magenta) 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: preloaderIn 0.8s 0.2s var(--ease-out) forwards;
+}
+.preloader-bar {
+  width: 100px;
+  height: 2px;
+  background: rgba(139, 92, 246, 0.15);
+  border-radius: 2px;
+  margin-top: 1.5rem;
+  overflow: hidden;
+  position: relative;
+}
+.preloader-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta));
+  transform-origin: left;
+  animation: preloaderFill 1.8s 0.4s ease forwards;
+}
+.preloader-genre {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--color-cyan);
+  margin-top: 1.2rem;
+  opacity: 0;
+  animation: preloaderIn 0.6s 0.8s ease forwards;
+}
+.preloader-ring {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  animation: preloaderRing 2s 1s ease-out forwards;
+  opacity: 0;
+}
+@keyframes preloaderIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes preloaderFill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes preloaderRing {
+  0% { transform: scale(0.6); opacity: 0; }
+  30% { opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+/* ======================== AMBIENT PARTICLES ======================== */
+.particle-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ======================== FILM GRAIN (Animated) ======================== */
+.film-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="1"/></svg>');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: grainShift 0.3s steps(3) infinite;
+}
+@keyframes grainShift {
+  0% { background-position: 0 0; }
+  33% { background-position: -40px -20px; }
+  66% { background-position: 20px -40px; }
+}
+
+/* ======================== GLOW DIVIDERS ======================== */
+.glow-section-divider {
+  width: 100%;
+  height: 1px;
+  border: none;
+  margin: 0;
+  position: relative;
+  background: var(--color-line);
+  overflow: visible;
+}
+.glow-section-divider::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-cyan), var(--color-magenta), transparent);
+  opacity: 0;
+  transform: scaleX(0);
+  transition: opacity 0.8s ease, transform 1.2s var(--ease-out);
+}
+.glow-section-divider.visible::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* ======================== FULLSCREEN SECTIONS ======================== */
+.section-cinematic {
+  min-height: 100svh;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.section-cinematic > .container {
+  width: 100%;
+}
+
+/* ======================== SECTION MOOD SHIFTS ======================== */
+.mood-sound {
+  background: radial-gradient(ellipse at 40% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
+}
+.mood-identity {
+  background: var(--color-abyss);
+  border-block: 1px solid var(--color-line);
+}
+.mood-release {
+  background: radial-gradient(ellipse at 60% 40%, rgba(196, 132, 29, 0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 30% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+}
+.mood-statement {
+  background: var(--color-void);
+}
+
+/* ======================== HERO STAGGER (on-load animation) ======================== */
+.hero-stagger {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: heroReveal 0.9s var(--ease-out) forwards;
+  animation-delay: var(--stagger, 0s);
+}
+@keyframes heroReveal {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* body blocks scroll until preloader done */
+body.loading {
+  overflow: hidden;
+}
+
 /* ======================== REDUCED MOTION ======================== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -1176,7 +1358,10 @@ section {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .reveal { opacity: 1; transform: none; }
+  .reveal, .hero-stagger { opacity: 1; transform: none; }
   .scroll-cue { display: none; }
+  .film-grain { display: none; }
+  .preloader { display: none; }
+  .particle-canvas { display: none; }
   html { scroll-behavior: auto; }
 }
