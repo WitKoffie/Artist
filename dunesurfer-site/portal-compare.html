@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Comparison — DuneSurfer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #06010e;
+      color: #e0e0e0;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      padding: 2rem 1rem 0.5rem;
+      font-size: 1.5rem;
+      color: #00e5ff;
+      letter-spacing: 0.05em;
+    }
+    p.subtitle {
+      text-align: center;
+      color: #8b5cf6;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 2rem;
+      padding: 0 2rem 3rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+      color: #ff2aaa;
+    }
+    .card p {
+      font-size: 0.85rem;
+      color: #999;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    .portal-frame {
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 400px;
+      margin: 0 auto;
+      border-radius: 50%;
+      overflow: hidden;
+      background: radial-gradient(circle, #0a0218 0%, #06010e 100%);
+      position: relative;
+    }
+    .portal-frame canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .note {
+      text-align: center;
+      padding: 1rem;
+      color: #666;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>DuneSurfer Portal Comparison</h1>
+  <p class="subtitle">Three 3D portal options — hover each to interact</p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Option 1: Wormhole Tunnel</h2>
+      <p>A deep tunnel receding into space with ring gates, spiraling energy, and streaking star particles. You look into it from an offset angle.</p>
+      <div class="portal-frame" id="portal-1"></div>
+    </div>
+
+    <div class="card">
+      <h2>Option 2: Particle Vortex Sphere</h2>
+      <p>3000 particles swirling in a sphere/torus shape with orbital frequency rings, a pulsing core, and spark trails. The whole structure rotates.</p>
+      <div class="portal-frame" id="portal-2"></div>
+    </div>
+
+    <div class="card">
+      <h2>Option 3: Portal Disc with Depth</h2>
+      <p>18 layered transparent discs stacked in depth — spirals, ripples, and nebula — with parallax on mouse move and floating motes around the edges.</p>
+      <div class="portal-frame" id="portal-3"></div>
+    </div>
+  </div>
+
+  <p class="note">Move your mouse over each portal to see parallax/interaction. All respond to audio when playing.</p>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+    // We need to instantiate each portal in its own container.
+    // The portal scripts look for #sound-portal, so we'll run them sequentially,
+    // swapping out which element has that ID.
+
+    function loadPortal(containerId, scriptSrc) {
+      return new Promise(function(resolve) {
+        var el = document.getElementById(containerId);
+        el.id = 'sound-portal';
+        // Wrap in a portal-stage class div
+        el.classList.add('portal-stage-mock');
+
+        var script = document.createElement('script');
+        script.src = scriptSrc;
+        script.onload = function() {
+          // Restore original ID and remove sound-portal
+          el.id = containerId;
+          resolve();
+        };
+        document.body.appendChild(script);
+      });
+    }
+
+    // Load them sequentially since they all look for #sound-portal
+    loadPortal('portal-1', './js/portal.js').then(function() {
+      return loadPortal('portal-2', './js/portal-vortex.js');
+    }).then(function() {
+      return loadPortal('portal-3', './js/portal-disc.js');
+    });
+  </script>
+</body>
+</html>
