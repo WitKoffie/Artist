@@ -19,11 +19,13 @@
     if (!gl) { if (stage) stage.classList.add('no-webgl'); return; }
   } catch (e) { if (stage) stage.classList.add('no-webgl'); return; }
 
-  /* ── Scene setup ── */
+  /* ── Scene ── */
   var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(75, 1, 0.1, 200);
-  camera.position.set(0, 0, 0.1);
-  camera.lookAt(0, 0, -100);
+
+  // Camera offset and angled — so you SEE the tunnel walls receding
+  var camera = new THREE.PerspectiveCamera(70, 1, 0.1, 200);
+  camera.position.set(0.8, 0.6, 2.5);
+  camera.lookAt(0, 0, -40);
 
   var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -41,21 +43,26 @@
   resize();
   window.addEventListener('resize', resize);
 
-  /* ── Tunnel shader ── */
+  /* ── Colors ── */
+  var CYAN = new THREE.Color(0x00e5ff);
+  var MAGENTA = new THREE.Color(0xff2aaa);
+  var VIOLET = new THREE.Color(0x8b5cf6);
+
+  /* ── Tunnel wall shader ── */
   var tunnelUniforms = {
     uTime: { value: 0 },
     uAudio: { value: 0 },
-    uMouse: { value: new THREE.Vector2(0.5, 0.5) },
     uPulse: { value: 0 }
   };
 
   var tunnelVert = [
     'varying vec2 vUv;',
-    'varying vec3 vPos;',
+    'varying float vDepth;',
     'void main() {',
     '  vUv = uv;',
-    '  vPos = position;',
-    '  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+    '  vec4 mvPos = modelViewMatrix * vec4(position, 1.0);',
+    '  vDepth = -mvPos.z / 80.0;',
+    '  gl_Position = projectionMatrix * mvPos;',
     '}'
   ].join('\n');
 
@@ -63,122 +70,90 @@
     'precision highp float;',
     'uniform float uTime;',
     'uniform float uAudio;',
-    'uniform vec2 uMouse;',
     'uniform float uPulse;',
     'varying vec2 vUv;',
-    'varying vec3 vPos;',
+    'varying float vDepth;',
     '',
     'vec3 cyan    = vec3(0.0, 0.898, 1.0);',
     'vec3 magenta = vec3(1.0, 0.165, 0.667);',
     'vec3 violet  = vec3(0.545, 0.361, 0.965);',
-    'vec3 deep    = vec3(0.015, 0.005, 0.04);',
-    'vec3 amber   = vec3(0.77, 0.52, 0.11);',
+    'vec3 deep    = vec3(0.012, 0.004, 0.035);',
     '',
     'float hash(vec2 p) {',
     '  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);',
     '}',
-    '',
     'float noise(vec2 p) {',
-    '  vec2 i = floor(p);',
-    '  vec2 f = fract(p);',
+    '  vec2 i = floor(p); vec2 f = fract(p);',
     '  f = f * f * (3.0 - 2.0 * f);',
-    '  return mix(',
-    '    mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),',
-    '    mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),',
-    '    f.y);',
+    '  return mix(mix(hash(i), hash(i+vec2(1,0)), f.x),',
+    '             mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y);',
     '}',
-    '',
     'float fbm(vec2 p) {',
-    '  float v = 0.0, a = 0.5;',
-    '  for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.1; a *= 0.48; }',
+    '  float v=0.0, a=0.5;',
+    '  for(int i=0;i<4;i++){v+=a*noise(p);p*=2.1;a*=0.5;}',
     '  return v;',
     '}',
     '',
     'void main() {',
     '  float angle = vUv.x * 6.2832;',
     '  float depth = vUv.y;',
-    '  float speed = 0.3 + uAudio * 0.5;',
+    '  float speed = 0.25 + uAudio * 0.5;',
+    '  float flow = depth * 10.0 + uTime * speed;',
     '',
-    '  // Flowing depth — perpetual forward motion',
-    '  float flow = depth * 8.0 + uTime * speed;',
+    '  // Spirals wrapping the walls',
+    '  float s1 = pow(sin(angle*3.0 + flow*1.2)*0.5+0.5, 3.0);',
+    '  float s2 = pow(sin(angle*5.0 - flow*1.8+1.5)*0.5+0.5, 4.0);',
+    '  float s3 = pow(sin(angle*2.0 + flow*0.6+3.0)*0.5+0.5, 2.5);',
     '',
-    '  // Spiral energy streams wrapping the tunnel',
-    '  float spiral1 = sin(angle * 4.0 + flow * 1.5) * 0.5 + 0.5;',
-    '  float spiral2 = sin(angle * 6.0 - flow * 2.0 + 1.5) * 0.5 + 0.5;',
-    '  float spiral3 = sin(angle * 2.0 + flow * 0.8 + 3.0) * 0.5 + 0.5;',
+    '  // Nebula',
+    '  vec2 nUv = vec2(angle*0.4+uTime*0.015, flow*0.12);',
+    '  float neb = fbm(nUv*3.5);',
     '',
-    '  // Nebula clouds swirling through the tunnel',
-    '  vec2 nUv = vec2(angle * 0.5 + uTime * 0.02, flow * 0.15);',
-    '  float neb = fbm(nUv * 3.0);',
-    '  float neb2 = fbm(nUv * 5.0 + 2.5);',
+    '  // Depth atmosphere',
+    '  float depthFade = smoothstep(0.0, 0.25, depth);',
+    '  float farGlow = smoothstep(0.75, 1.0, depth);',
     '',
-    '  // Depth fog — darker near camera, bright at vanishing point',
-    '  float depthFade = smoothstep(0.0, 0.4, depth);',
-    '  float farGlow = smoothstep(0.7, 1.0, depth);',
-    '',
-    '  // Base color — deep void with depth',
     '  vec3 col = deep;',
+    '  col = mix(col, violet*0.3, neb*depthFade*0.7);',
+    '  col += cyan * s1 * 0.3 * depthFade;',
+    '  col += magenta * s2 * 0.2 * depthFade;',
+    '  col += violet * s3 * 0.15 * depthFade;',
     '',
-    '  // Nebula clouds',
-    '  col = mix(col, violet * 0.35, neb * depthFade * 0.8);',
-    '  col = mix(col, deep * 1.5, neb2 * 0.3);',
+    '  // Frequency rings pulsating down the tunnel',
+    '  float ring = pow(abs(sin(flow * 25.0)), 30.0);',
+    '  vec3 ringCol = mix(cyan, magenta, sin(depth*4.0+uTime*0.4)*0.5+0.5);',
+    '  col += ringCol * ring * (0.25 + uAudio*0.6 + uPulse*0.4) * depthFade;',
     '',
-    '  // Spiral energy streams',
-    '  float s1 = pow(spiral1, 4.0) * depthFade;',
-    '  float s2 = pow(spiral2, 5.0) * depthFade;',
-    '  float s3 = pow(spiral3, 3.0) * depthFade;',
-    '  col += cyan * s1 * 0.35;',
-    '  col += magenta * s2 * 0.25;',
-    '  col += violet * s3 * 0.2;',
+    '  // Bass throb',
+    '  float bass = pow(abs(sin(flow*3.0 + uTime*1.8)), 6.0);',
+    '  col += violet * bass * 0.12 * (1.0 + uAudio);',
     '',
-    '  // Frequency rings — pulsating bands across the tunnel depth',
-    '  float ringFreq = 30.0;',
-    '  float ringPhase = flow * ringFreq;',
-    '  float ring = pow(abs(sin(ringPhase)), 40.0);',
-    '  float ringPulse = ring * (0.3 + uAudio * 0.7 + uPulse * 0.5);',
-    '  vec3 ringCol = mix(cyan, magenta, sin(depth * 3.0 + uTime * 0.3) * 0.5 + 0.5);',
-    '  col += ringCol * ringPulse * depthFade * 0.6;',
+    '  // Far end glow',
+    '  col += mix(cyan, vec3(1.0), 0.4) * farGlow * (0.4 + uAudio*0.5);',
     '',
-    '  // Wider pulsation bands — bass frequency feel',
-    '  float bassPulse = pow(abs(sin(flow * 4.0 + uTime * 1.5)), 8.0);',
-    '  col += violet * bassPulse * 0.15 * (1.0 + uAudio);',
+    '  // Sparkle dust in the walls',
+    '  float sparkle = hash(vec2(angle*15.0, flow*8.0) + floor(uTime*4.0));',
+    '  sparkle = pow(sparkle, 22.0) * depthFade;',
+    '  col += vec3(0.9, 0.95, 1.0) * sparkle * (0.4 + uAudio);',
     '',
-    '  // Vanishing point glow — the light at the end',
-    '  col += mix(cyan, vec3(1.0), 0.3) * farGlow * (0.5 + uAudio * 0.5);',
+    '  // Vignette near opening',
+    '  col *= smoothstep(0.0, 0.12, depth);',
     '',
-    '  // Mouse sway highlight — as if a light source shifts',
-    '  float mAngle = atan(uMouse.y - 0.5, uMouse.x - 0.5);',
-    '  float angleDiff = abs(sin((angle - mAngle) * 0.5));',
-    '  col += violet * 0.08 * (1.0 - angleDiff) * depthFade;',
-    '',
-    '  // Sparkle dust',
-    '  float sparkle = hash(vec2(angle * 20.0, flow * 10.0) + floor(uTime * 5.0));',
-    '  sparkle = pow(sparkle, 25.0) * depthFade;',
-    '  col += vec3(0.9, 0.95, 1.0) * sparkle * (0.5 + uAudio * 1.0);',
-    '',
-    '  // Edge vignette — darken near camera opening',
-    '  float vignette = smoothstep(0.0, 0.15, depth);',
-    '  col *= vignette;',
-    '',
-    '  // Subtle amber warmth in mid-tones',
-    '  col += amber * 0.04 * neb * depthFade;',
-    '',
-    '  gl_FragColor = vec4(col, 0.95);',
+    '  gl_FragColor = vec4(col, 0.92);',
     '}'
   ].join('\n');
 
-  /* ── Build the tunnel geometry ── */
-  var tunnelLength = 80;
-  var tunnelRadius = 3.5;
-  var tunnelSegments = 128;
-  var tunnelRadialSegs = 64;
-
+  // Tapered cylinder — wider at camera end, narrower at far end for perspective
+  var tunnelLen = 70;
   var tunnelGeo = new THREE.CylinderGeometry(
-    tunnelRadius, tunnelRadius * 0.3,
-    tunnelLength, tunnelRadialSegs, tunnelSegments, true
+    4.0,   // top radius (far end — smaller)
+    1.2,   // bottom radius (near camera — but we flip it)
+    tunnelLen,
+    64, 128, true
   );
+  // Rotate so it extends along -Z and flip so wide end is near camera
   tunnelGeo.rotateX(Math.PI / 2);
-  tunnelGeo.translate(0, 0, -tunnelLength / 2);
+  tunnelGeo.translate(0, 0, -tunnelLen / 2 + 2);
 
   var tunnelMat = new THREE.ShaderMaterial({
     uniforms: tunnelUniforms,
@@ -188,88 +163,24 @@
     transparent: true,
     depthWrite: false
   });
-  var tunnel = new THREE.Mesh(tunnelGeo, tunnelMat);
-  scene.add(tunnel);
+  var tunnelMesh = new THREE.Mesh(tunnelGeo, tunnelMat);
+  scene.add(tunnelMesh);
 
-  /* ── Depth particles — stars flying past ── */
-  var starCount = 300;
-  var starGeo = new THREE.BufferGeometry();
-  var starPos = new Float32Array(starCount * 3);
-  var starCol = new Float32Array(starCount * 3);
-  var starSizes = new Float32Array(starCount);
-  var starSpeeds = [];
-
-  var colChoices = [
-    new THREE.Color(0x00e5ff),
-    new THREE.Color(0xff2aaa),
-    new THREE.Color(0x8b5cf6),
-    new THREE.Color(0xffffff)
-  ];
-
-  for (var i = 0; i < starCount; i++) {
-    var ang = Math.random() * Math.PI * 2;
-    var rad = 0.3 + Math.random() * (tunnelRadius - 0.8);
-    starPos[i * 3] = Math.cos(ang) * rad;
-    starPos[i * 3 + 1] = Math.sin(ang) * rad;
-    starPos[i * 3 + 2] = -Math.random() * tunnelLength;
-    starSpeeds.push(8 + Math.random() * 20);
-    starSizes[i] = 1.5 + Math.random() * 3.0;
-
-    var sc = colChoices[Math.floor(Math.random() * colChoices.length)];
-    starCol[i * 3] = sc.r;
-    starCol[i * 3 + 1] = sc.g;
-    starCol[i * 3 + 2] = sc.b;
-  }
-
-  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-  starGeo.setAttribute('color', new THREE.BufferAttribute(starCol, 3));
-  starGeo.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
-
-  var starVertShader = [
-    'attribute float size;',
-    'varying vec3 vColor;',
-    'void main() {',
-    '  vColor = color;',
-    '  vec4 mvPos = modelViewMatrix * vec4(position, 1.0);',
-    '  gl_PointSize = size * (80.0 / -mvPos.z);',
-    '  gl_Position = projectionMatrix * mvPos;',
-    '}'
-  ].join('\n');
-
-  var starFragShader = [
-    'precision highp float;',
-    'varying vec3 vColor;',
-    'void main() {',
-    '  float d = length(gl_PointCoord - 0.5) * 2.0;',
-    '  float alpha = 1.0 - smoothstep(0.0, 1.0, d);',
-    '  alpha *= alpha;',
-    '  gl_FragColor = vec4(vColor, alpha * 0.8);',
-    '}'
-  ].join('\n');
-
-  var starMat = new THREE.ShaderMaterial({
-    vertexShader: starVertShader,
-    fragmentShader: starFragShader,
-    transparent: true,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-    vertexColors: true
-  });
-  var stars = new THREE.Points(starGeo, starMat);
-  scene.add(stars);
-
-  /* ── Pulsating ring gates along the tunnel ── */
+  /* ── Ring gates at intervals — physical 3D depth markers ── */
   var ringGates = [];
-  var ringGateCount = 8;
-  for (var r = 0; r < ringGateCount; r++) {
-    var rz = -(r + 1) * (tunnelLength / (ringGateCount + 1));
-    var rRadius = tunnelRadius * (1.0 - (r / ringGateCount) * 0.6);
-    var rGeo = new THREE.TorusGeometry(rRadius, 0.03 + (ringGateCount - r) * 0.005, 16, 80);
-    var rColor = r % 3 === 0 ? 0x00e5ff : (r % 3 === 1 ? 0xff2aaa : 0x8b5cf6);
+  for (var r = 0; r < 10; r++) {
+    var rz = -3 - r * 6.5;
+    var rLerp = r / 10;
+    // Rings get smaller as they go deeper — matching tunnel taper
+    var rRadius = 4.0 - rLerp * 2.8;
+    var thickness = 0.04 - r * 0.002;
+    if (thickness < 0.015) thickness = 0.015;
+    var rGeo = new THREE.TorusGeometry(rRadius, thickness, 12, 80);
+    var rColor = r % 3 === 0 ? CYAN : (r % 3 === 1 ? MAGENTA : VIOLET);
     var rMat = new THREE.MeshBasicMaterial({
       color: rColor,
       transparent: true,
-      opacity: 0.3
+      opacity: 0.35 - r * 0.02
     });
     var rMesh = new THREE.Mesh(rGeo, rMat);
     rMesh.position.set(0, 0, rz);
@@ -278,39 +189,99 @@
       mesh: rMesh,
       baseZ: rz,
       baseRadius: rRadius,
-      speed: 0.6 + r * 0.15,
-      phase: r * 0.8
+      speed: 0.5 + r * 0.12,
+      phase: r * 0.9,
+      index: r
     });
   }
 
-  /* ── Central vanishing point glow ── */
-  var vpGeo = new THREE.SphereGeometry(0.6, 32, 32);
-  var vpMat = new THREE.MeshBasicMaterial({
-    color: 0x00e5ff,
-    transparent: true,
-    opacity: 0.4
-  });
-  var vpGlow = new THREE.Mesh(vpGeo, vpMat);
-  vpGlow.position.set(0, 0, -tunnelLength + 2);
-  scene.add(vpGlow);
+  /* ── Depth particles — stars streaking past ── */
+  var starCount = 400;
+  var starGeo = new THREE.BufferGeometry();
+  var starPos = new Float32Array(starCount * 3);
+  var starCol = new Float32Array(starCount * 3);
+  var starSizes = new Float32Array(starCount);
+  var starSpeeds = [];
+  var colChoices = [CYAN, MAGENTA, VIOLET, new THREE.Color(0xffffff)];
 
-  var vpGeo2 = new THREE.SphereGeometry(1.8, 32, 32);
-  var vpMat2 = new THREE.MeshBasicMaterial({
-    color: 0x8b5cf6,
-    transparent: true,
-    opacity: 0.12
-  });
-  var vpGlow2 = new THREE.Mesh(vpGeo2, vpMat2);
-  vpGlow2.position.set(0, 0, -tunnelLength + 2);
-  scene.add(vpGlow2);
+  function initStar(i, farSpawn) {
+    var ang = Math.random() * Math.PI * 2;
+    var maxR = 3.8 - (farSpawn ? 2.0 : 0);
+    var rad = 0.2 + Math.random() * maxR;
+    starPos[i * 3] = Math.cos(ang) * rad;
+    starPos[i * 3 + 1] = Math.sin(ang) * rad;
+    starPos[i * 3 + 2] = farSpawn ? (-5 - Math.random() * tunnelLen) : (2 - Math.random() * (tunnelLen + 5));
+    starSpeeds[i] = 6 + Math.random() * 18;
+    starSizes[i] = 1.0 + Math.random() * 3.5;
+    var sc = colChoices[Math.floor(Math.random() * colChoices.length)];
+    starCol[i * 3] = sc.r;
+    starCol[i * 3 + 1] = sc.g;
+    starCol[i * 3 + 2] = sc.b;
+  }
 
-  /* ── Interaction state ── */
+  for (var i = 0; i < starCount; i++) initStar(i, false);
+
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  starGeo.setAttribute('color', new THREE.BufferAttribute(starCol, 3));
+  starGeo.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+
+  var starVert = [
+    'attribute float size;',
+    'varying vec3 vColor;',
+    'varying float vAlpha;',
+    'void main() {',
+    '  vColor = color;',
+    '  vec4 mvPos = modelViewMatrix * vec4(position, 1.0);',
+    '  float dist = -mvPos.z;',
+    '  gl_PointSize = size * (60.0 / max(dist, 1.0));',
+    '  vAlpha = smoothstep(80.0, 5.0, dist);',
+    '  gl_Position = projectionMatrix * mvPos;',
+    '}'
+  ].join('\n');
+
+  var starFrag = [
+    'precision highp float;',
+    'varying vec3 vColor;',
+    'varying float vAlpha;',
+    'void main() {',
+    '  float d = length(gl_PointCoord - 0.5) * 2.0;',
+    '  float a = 1.0 - smoothstep(0.0, 1.0, d);',
+    '  a *= a;',
+    '  gl_FragColor = vec4(vColor, a * vAlpha * 0.85);',
+    '}'
+  ].join('\n');
+
+  var starMat = new THREE.ShaderMaterial({
+    vertexShader: starVert,
+    fragmentShader: starFrag,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    vertexColors: true
+  });
+  scene.add(new THREE.Points(starGeo, starMat));
+
+  /* ── Vanishing point glow ── */
+  var vpCore = new THREE.Mesh(
+    new THREE.SphereGeometry(0.8, 32, 32),
+    new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.5 })
+  );
+  vpCore.position.set(0, 0, -tunnelLen + 3);
+  scene.add(vpCore);
+
+  var vpHalo = new THREE.Mesh(
+    new THREE.SphereGeometry(2.5, 32, 32),
+    new THREE.MeshBasicMaterial({ color: VIOLET, transparent: true, opacity: 0.1 })
+  );
+  vpHalo.position.set(0, 0, -tunnelLen + 3);
+  scene.add(vpHalo);
+
+  /* ── Interaction ── */
   var mouse = { x: 0.5, y: 0.5 };
   var smoothMouse = { x: 0.5, y: 0.5 };
   var isAudioPlaying = false;
   var audioLevel = 0;
   var targetAudioLevel = 0;
-  var pulse = 0;
 
   container.addEventListener('pointermove', function (e) {
     var rect = container.getBoundingClientRect();
@@ -323,71 +294,63 @@
   window.addEventListener('wk:audio-playing', function () { isAudioPlaying = true; targetAudioLevel = 1; });
   window.addEventListener('wk:audio-stopped', function () { isAudioPlaying = false; targetAudioLevel = 0; });
 
-  /* ── Animation loop ── */
+  /* ── Animate ── */
   var clock = new THREE.Clock();
   var isVisible = true;
+  var baseCamX = 0.8, baseCamY = 0.6;
 
   function animate() {
     if (!isVisible) { requestAnimationFrame(animate); return; }
     var t = clock.getElapsedTime();
-    var dt = clock.getDelta();
 
-    // Smooth audio
     audioLevel += (targetAudioLevel - audioLevel) * 0.08;
-
-    // Smooth mouse
     smoothMouse.x += (mouse.x - smoothMouse.x) * 0.04;
     smoothMouse.y += (mouse.y - smoothMouse.y) * 0.04;
 
-    // Gentle camera sway from mouse
+    // Camera sway — mouse moves the viewpoint around inside the tunnel
     if (!reducedMotion) {
-      camera.position.x = (smoothMouse.x - 0.5) * 0.6;
-      camera.position.y = (smoothMouse.y - 0.5) * -0.6;
-      camera.lookAt(0, 0, -50);
+      camera.position.x = baseCamX + (smoothMouse.x - 0.5) * 1.2;
+      camera.position.y = baseCamY + (smoothMouse.y - 0.5) * -1.2;
+      // Gentle orbit drift
+      camera.position.x += Math.sin(t * 0.15) * 0.3;
+      camera.position.y += Math.cos(t * 0.12) * 0.2;
     }
+    camera.lookAt(0, 0, -40);
 
-    // Pulse — rhythmic throb
-    pulse = Math.pow(Math.abs(Math.sin(t * 2.0)), 3.0) * (0.3 + audioLevel * 0.7);
+    // Pulse rhythm
+    var pulse = Math.pow(Math.abs(Math.sin(t * 2.0)), 3.0) * (0.3 + audioLevel * 0.7);
 
-    // Update tunnel shader
     tunnelUniforms.uTime.value = t;
     tunnelUniforms.uAudio.value = audioLevel;
-    tunnelUniforms.uMouse.value.set(smoothMouse.x, smoothMouse.y);
     tunnelUniforms.uPulse.value = pulse;
 
-    // Animate depth particles — fly toward camera, loop back
-    var posArr = starGeo.attributes.position.array;
-    var speedMul = 1.0 + audioLevel * 2.0;
+    // Stars fly toward camera
+    var speedMul = 1.0 + audioLevel * 2.5;
     for (var i = 0; i < starCount; i++) {
-      posArr[i * 3 + 2] += starSpeeds[i] * 0.016 * speedMul;
-      if (posArr[i * 3 + 2] > 1) {
-        var ang = Math.random() * Math.PI * 2;
-        var rad = 0.3 + Math.random() * (tunnelRadius - 0.8);
-        posArr[i * 3] = Math.cos(ang) * rad;
-        posArr[i * 3 + 1] = Math.sin(ang) * rad;
-        posArr[i * 3 + 2] = -tunnelLength + Math.random() * 5;
+      starPos[i * 3 + 2] += starSpeeds[i] * 0.016 * speedMul;
+      if (starPos[i * 3 + 2] > 4) {
+        initStar(i, true);
       }
     }
     starGeo.attributes.position.needsUpdate = true;
 
-    // Animate ring gates — pulsate scale and opacity
+    // Ring gates pulse and rotate
     for (var r = 0; r < ringGates.length; r++) {
       var rg = ringGates[r];
       var wave = Math.sin(t * rg.speed + rg.phase);
-      var scale = 1.0 + wave * 0.08 * (1.0 + audioLevel * 2.0);
-      rg.mesh.scale.set(scale, scale, 1);
-      rg.mesh.material.opacity = 0.15 + wave * 0.15 + audioLevel * 0.2;
-
+      var sc = 1.0 + wave * 0.06 * (1.0 + audioLevel * 2.5);
+      rg.mesh.scale.set(sc, sc, 1);
+      rg.mesh.material.opacity = 0.2 + wave * 0.15 + audioLevel * 0.15 + pulse * 0.1;
       if (!reducedMotion) {
-        rg.mesh.rotation.z = t * 0.1 * (r % 2 === 0 ? 1 : -1);
+        rg.mesh.rotation.z = t * 0.08 * (r % 2 === 0 ? 1 : -1);
       }
     }
 
-    // Vanishing point pulse
-    vpGlow.material.opacity = 0.25 + pulse * 0.5 + audioLevel * 0.3;
-    vpGlow.scale.setScalar(1.0 + pulse * 0.4);
-    vpGlow2.material.opacity = 0.08 + pulse * 0.15;
-    vpGlow2.scale.setScalar(1.0 + pulse * 0.6);
+    // Vanishing point throb
+    vpCore.material.opacity = 0.3 + pulse * 0.5 + audioLevel * 0.3;
+    vpCore.scale.setScalar(1.0 + pulse * 0.5);
+    vpHalo.material.opacity = 0.06 + pulse * 0.12;
+    vpHalo.scale.setScalar(1.0 + pulse * 0.8);
 
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
