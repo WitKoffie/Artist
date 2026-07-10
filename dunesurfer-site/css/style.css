@@ -1366,3 +1366,192 @@ body.loading {
   .particle-canvas { display: none; }
   html { scroll-behavior: auto; }
 }
+
+/* ── Custom cursor ── */
+.cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 8px; height: 8px;
+  background: #00e5ff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  mix-blend-mode: difference;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease;
+}
+.cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  width: 40px; height: 40px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+}
+.cursor-ring.cursor-active {
+  width: 60px; height: 60px;
+  border-color: #00e5ff;
+}
+@media (hover: hover) {
+  .has-custom-cursor,
+  .has-custom-cursor a,
+  .has-custom-cursor button,
+  .has-custom-cursor input,
+  .has-custom-cursor textarea,
+  .has-custom-cursor select { cursor: none !important; }
+}
+@media (hover: none) {
+  .cursor-dot, .cursor-ring { display: none !important; }
+}
+
+/* ── Split text ── */
+[data-split-text] .word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+[data-split-text] .char {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* ── Magnetic buttons ── */
+[data-magnetic] {
+  will-change: transform;
+  transition: box-shadow 0.3s ease;
+}
+[data-magnetic]:hover {
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.15), 0 0 60px rgba(0, 229, 255, 0.05);
+}
+
+/* ── Image reveal ── */
+.reveal-image-wrap {
+  overflow: hidden;
+  border-radius: inherit;
+}
+.reveal-image-wrap img {
+  will-change: transform, clip-path;
+}
+
+/* ── Horizontal scroll ── */
+[data-horizontal-scroll] {
+  overflow: hidden;
+}
+.horizontal-track {
+  display: flex;
+  gap: 2rem;
+  will-change: transform;
+  padding: 0 2rem;
+}
+.horizontal-track .h-card {
+  flex: 0 0 clamp(280px, 30vw, 400px);
+  aspect-ratio: 3/4;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.horizontal-track .h-card img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.horizontal-track .h-card:hover img {
+  transform: scale(1.08);
+}
+.horizontal-track .h-card .h-card-content {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 1.5rem;
+  background: linear-gradient(transparent, rgba(6,1,14,0.9));
+}
+.horizontal-track .h-card .h-card-content h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+.horizontal-track .h-card .h-card-content p {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ── Marquee ── */
+[data-marquee] {
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--color-line, rgba(255,255,255,0.06));
+  border-bottom: 1px solid var(--color-line, rgba(255,255,255,0.06));
+}
+.marquee-inner {
+  display: inline-flex;
+  gap: 3rem;
+  will-change: transform;
+}
+.marquee-inner span {
+  font-size: clamp(1.2rem, 3vw, 2.5rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.08);
+  white-space: nowrap;
+}
+.marquee-inner span.marquee-accent {
+  color: rgba(0, 229, 255, 0.2);
+}
+
+/* ── Enhanced reveals ── */
+.reveal-child {
+  will-change: transform, opacity;
+}
+
+/* Glow divider upgrade */
+.section-divider-glow {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #00e5ff, #ff2aaa, #8b5cf6, transparent);
+  opacity: 0.3;
+  margin: 0;
+}
+
+/* ── Scramble text ── */
+[data-scramble] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Lenis overrides ── */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ── Enhanced glass-card hover ── */
+.glass-card {
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+              border-color 0.5s ease,
+              box-shadow 0.5s ease;
+}
+.glass-card:hover {
+  border-color: rgba(0, 229, 255, 0.15);
+  box-shadow: 0 8px 40px rgba(0, 229, 255, 0.06), 0 0 0 1px rgba(0, 229, 255, 0.08);
+}
+
+/* ── Parallax ── */
+[data-parallax] {
+  will-change: transform;
+}
+
+/* ── Portal parallax on scroll ── */
+.portal-stage {
+  will-change: transform;
+}
