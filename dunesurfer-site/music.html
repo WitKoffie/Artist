@@ -13,6 +13,9 @@
 
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
   <link rel="stylesheet" href="./css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
 </head>
 <body>
   <div class="scroll-progress" aria-hidden="true"></div>
@@ -56,20 +59,20 @@
   <main id="main">
     <section class="page-hero" aria-labelledby="releases-heading">
       <div class="container">
-        <span class="section-kicker reveal">The transmissions</span>
-        <h1 id="releases-heading" class="reveal">The Releases</h1>
+        <span class="section-kicker reveal" data-scramble>The transmissions</span>
+        <h1 id="releases-heading" class="reveal" data-split-text="words">The Releases</h1>
         <p class="section-lead reveal">Psydance built from desert bass and cosmic motion. Each track a journey.</p>
       </div>
     </section>
 
     <section aria-labelledby="latest-heading" style="padding-top: 0;">
       <div class="container">
-        <span class="section-kicker reveal">Latest</span>
-        <h2 id="latest-heading" class="section-title reveal">Featured Release</h2>
+        <span class="section-kicker reveal" data-scramble>Latest</span>
+        <h2 id="latest-heading" class="section-title reveal" data-split-text="words">Featured Release</h2>
 
         <div id="featured-release" class="featured-wrap">
           <div class="cover-frame tilt reveal">
-            <img data-slot="cover" src="./assets/images/release-placeholder.jpg" alt="Featured release cover art">
+            <img data-slot="cover" data-reveal-image src="./assets/images/release-placeholder.jpg" alt="Featured release cover art">
           </div>
           <div class="featured-panel reveal">
             <span class="release-date" data-slot="date">Coming soon</span>
@@ -84,8 +87,8 @@
 
     <section aria-labelledby="all-releases-heading" style="background: var(--color-abyss); border-block: 1px solid var(--color-line);">
       <div class="container">
-        <span class="section-kicker reveal">All releases</span>
-        <h2 id="all-releases-heading" class="section-title reveal">Every Transmission</h2>
+        <span class="section-kicker reveal" data-scramble>All releases</span>
+        <h2 id="all-releases-heading" class="section-title reveal" data-split-text="words">Every Transmission</h2>
         <p class="section-lead reveal">Listen on the platforms below.</p>
 
         <div id="releases-grid" class="releases-grid"></div>
@@ -96,7 +99,7 @@
       <div class="container">
         <h2 id="music-cta-heading" class="reveal">Want to book or collaborate?</h2>
         <div class="hero-actions reveal">
-          <a class="btn btn-primary" href="./contact.html">Contact DuneSurfer</a>
+          <a class="btn btn-primary" href="./contact.html" data-magnetic>Contact DuneSurfer</a>
         </div>
       </div>
     </section>
@@ -155,5 +158,6 @@
   <script src="./js/audio.js"></script>
   <script src="./js/releases.js"></script>
   <script src="./js/main.js"></script>
+  <script src="./js/interactions.js" defer></script>
 </body>
 </html>

@@ -13,6 +13,9 @@
 
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
   <link rel="stylesheet" href="./css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
 </head>
 <body>
   <div class="scroll-progress" aria-hidden="true"></div>
@@ -56,8 +59,8 @@
   <main id="main">
     <section class="page-hero" aria-labelledby="epk-heading">
       <div class="container">
-        <span class="section-kicker reveal">For promoters, festivals &amp; media</span>
-        <h1 id="epk-heading" class="reveal">Electronic Press Kit</h1>
+        <span class="section-kicker reveal" data-scramble>For promoters, festivals &amp; media</span>
+        <h1 id="epk-heading" class="reveal" data-split-text>Electronic Press Kit</h1>
         <p class="section-lead reveal">Everything you need to book, promote or feature DuneSurfer.</p>
       </div>
     </section>
@@ -66,11 +69,11 @@
       <div class="container">
         <div class="epk-bio-grid">
           <div class="epk-bio-photo reveal">
-            <img src="./assets/images/release-placeholder.jpg" alt="DuneSurfer artist press photo">
+            <img src="./assets/images/release-placeholder.jpg" alt="DuneSurfer artist press photo" data-reveal-image>
           </div>
           <div class="epk-bio-text reveal">
-            <span class="section-kicker">Artist bio</span>
-            <h2 id="bio-heading" class="section-title">DuneSurfer</h2>
+            <span class="section-kicker" data-scramble>Artist bio</span>
+            <h2 id="bio-heading" class="section-title" data-split-text="words">DuneSurfer</h2>
             <p>DuneSurfer creates <strong>Psydance</strong> — hypnotic electronic music built from desert silence, euphoric pressure, tribal rhythm and cosmic sound design. The sound is physical, cinematic and made for late-night movement.</p>
             <p>Psydance combines psytrance energy, dancefloor movement, desert mysticism, euphoric melody, hypnotic bass, tribal rhythm and cosmic visual atmosphere into an original genre world.</p>
             <p>The sound sits between earth, body, stars and rhythm.</p>
@@ -99,16 +102,16 @@
 
     <section aria-labelledby="genre-heading" style="background: var(--color-abyss); border-block: 1px solid var(--color-line);">
       <div class="container" style="max-width: 680px; text-align: center;">
-        <span class="section-kicker reveal">The frequency</span>
-        <h2 id="genre-heading" class="section-title reveal">What is Psydance?</h2>
+        <span class="section-kicker reveal" data-scramble>The frequency</span>
+        <h2 id="genre-heading" class="section-title reveal" data-split-text="words">What is Psydance?</h2>
         <p class="section-lead reveal" style="font-size: 1.15rem; line-height: 1.7; max-width: none;">Psydance is not a genre label. It is a frequency. Deep bass, euphoric movement, desert heat, cosmic depth, tribal pulse, psychedelic precision and premium electronic production. A sound between earth, body, stars and rhythm. DuneSurfer created it. The dancefloor defines it.</p>
       </div>
     </section>
 
     <section aria-labelledby="assets-heading">
       <div class="container">
-        <span class="section-kicker reveal">Press assets</span>
-        <h2 id="assets-heading" class="section-title reveal">Logo &amp; Artwork</h2>
+        <span class="section-kicker reveal" data-scramble>Press assets</span>
+        <h2 id="assets-heading" class="section-title reveal" data-split-text="words">Logo &amp; Artwork</h2>
         <p class="section-lead reveal">Right-click any image to save. For high-resolution files, contact DuneSurfer directly.</p>
 
         <div class="epk-assets-grid">
@@ -122,8 +125,8 @@
 
     <section aria-labelledby="links-heading" style="background: var(--color-abyss); border-block: 1px solid var(--color-line);">
       <div class="container">
-        <span class="section-kicker reveal">Connect</span>
-        <h2 id="links-heading" class="section-title reveal">Links &amp; Booking</h2>
+        <span class="section-kicker reveal" data-scramble>Connect</span>
+        <h2 id="links-heading" class="section-title reveal" data-split-text="words">Links &amp; Booking</h2>
 
         <div class="epk-links-grid">
           <div class="epk-link-card glass-card tilt reveal">
@@ -160,8 +163,8 @@
         <h2 id="epk-cta-heading" class="reveal">Book DuneSurfer</h2>
         <p class="section-lead reveal" style="margin: 0 auto 1.5rem; text-align: center;">For bookings, collaborations, festival slots or press features.</p>
         <div class="hero-actions reveal">
-          <a class="btn btn-primary" href="./contact.html">Contact DuneSurfer</a>
-          <a class="btn btn-secondary" href="./music.html">Explore The Sound</a>
+          <a class="btn btn-primary" href="./contact.html" data-magnetic>Contact DuneSurfer</a>
+          <a class="btn btn-secondary" href="./music.html" data-magnetic>Explore The Sound</a>
         </div>
       </div>
     </section>
@@ -219,5 +222,6 @@
 
   <script src="./js/audio.js"></script>
   <script src="./js/main.js"></script>
+  <script src="./js/interactions.js" defer></script>
 </body>
 </html>

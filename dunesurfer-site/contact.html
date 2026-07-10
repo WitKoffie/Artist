@@ -13,6 +13,9 @@
 
   <link rel="icon" type="image/png" href="./assets/images/favicon.png">
   <link rel="stylesheet" href="./css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
 </head>
 <body>
   <div class="scroll-progress" aria-hidden="true"></div>
@@ -56,8 +59,8 @@
   <main id="main">
     <section class="page-hero" aria-labelledby="contact-heading">
       <div class="container">
-        <span class="section-kicker reveal">Get in touch</span>
-        <h1 id="contact-heading" class="reveal">Bookings &amp; Contact</h1>
+        <span class="section-kicker reveal" data-split-text="words" data-scramble>Get in touch</span>
+        <h1 id="contact-heading" class="reveal" data-split-text>Bookings &amp; Contact</h1>
         <p class="section-lead reveal">For bookings, collaborations, press, festival enquiries or anything else, reach out below.</p>
       </div>
     </section>
@@ -105,7 +108,7 @@
 
           <input type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off">
 
-          <button class="btn btn-primary" type="submit">Send Transmission</button>
+          <button class="btn btn-primary" type="submit" data-magnetic>Send Transmission</button>
           <p id="form-status" class="form-note" role="status" aria-live="polite"></p>
         </form>
 
@@ -208,5 +211,6 @@
 
   <script src="./js/audio.js"></script>
   <script src="./js/main.js"></script>
+  <script src="./js/interactions.js" defer></script>
 </body>
 </html>

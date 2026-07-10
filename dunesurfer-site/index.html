@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="./css/style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
 </head>
 <body class="loading">
   <!-- Preloader -->
@@ -76,7 +79,7 @@
       <div class="container hero-grid">
         <div class="hero-copy">
           <span class="hero-eyebrow hero-stagger" style="--stagger: 2.2s"><span class="dot" aria-hidden="true"></span>Psydance</span>
-          <h1 class="hero-title hero-stagger" style="--stagger: 2.4s">DuneSurfer</h1>
+          <h1 class="hero-title hero-stagger" data-split-text style="--stagger: 2.4s">DuneSurfer</h1>
           <div class="hero-tagline-wrap hero-stagger" style="--stagger: 2.6s">
             <div class="tagline-col">
               <p class="hero-tagline">Desert Bass</p>
@@ -91,14 +94,14 @@
           <p class="hero-sub hero-stagger" style="--stagger: 2.8s">Hypnotic bass, euphoric pressure, ancient rhythm, future light. Psydance from the dunes to dance floor dimensions.</p>
 
           <div class="hero-actions hero-stagger" style="--stagger: 3s">
-            <button id="enter-sound" class="btn btn-primary" type="button">Enter The Vortex</button>
+            <button id="enter-sound" class="btn btn-primary" type="button" data-magnetic>Enter The Vortex</button>
             <span class="sound-status" role="status"><span class="pulse-dot" aria-hidden="true"></span>Frequencies Active</span>
-            <a class="btn btn-secondary" href="./music.html">Enter The Frequency</a>
+            <a class="btn btn-secondary" href="./music.html" data-magnetic>Enter The Frequency</a>
           </div>
           <p id="sound-live" class="visually-hidden" role="status" aria-live="polite"></p>
         </div>
 
-        <div class="portal-stage hero-stagger" style="--stagger: 2.5s">
+        <div class="portal-stage hero-stagger" data-parallax="0.15" style="--stagger: 2.5s">
           <div id="sound-portal" aria-hidden="true"></div>
           <div class="portal-fallback">
             <img class="fallback-mark" src="./assets/images/dunesurfer-mark.png" alt="Glowing cosmic DuneSurfer mandala">
@@ -113,8 +116,8 @@
 
     <section id="the-sound" class="section-cinematic mood-sound" aria-labelledby="sound-heading">
       <div class="container">
-        <span class="section-kicker reveal">Listen closer</span>
-        <h2 id="sound-heading" class="section-title reveal">The Frequencies</h2>
+        <span class="section-kicker reveal" data-scramble>Listen closer</span>
+        <h2 id="sound-heading" class="section-title reveal" data-split-text="words">The Frequencies</h2>
         <p class="section-lead reveal">Psydance is deep bass, euphoric movement, desert heat and cosmic depth. Physical, cinematic, built for late-night motion.</p>
 
         <div class="capsule-grid">
@@ -202,8 +205,8 @@
 
     <section class="section-cinematic mood-identity" aria-labelledby="identity-heading">
       <div class="container">
-        <span class="section-kicker reveal">What is Psydance</span>
-        <h2 id="identity-heading" class="section-title reveal">A Sound Between Earth, Body,<br>Stars And Rhythm.</h2>
+        <span class="section-kicker reveal" data-scramble>What is Psydance</span>
+        <h2 id="identity-heading" class="section-title reveal" data-split-text="words">A Sound Between Earth, Body,<br>Stars And Rhythm.</h2>
 
         <div class="identity-grid">
           <article class="identity-card glass-card tilt reveal">
@@ -245,12 +248,12 @@
 
     <section class="section-cinematic mood-release" aria-labelledby="featured-heading">
       <div class="container">
-        <span class="section-kicker reveal">Now playing</span>
-        <h2 id="featured-heading" class="section-title reveal">Featured Release</h2>
+        <span class="section-kicker reveal" data-scramble>Now playing</span>
+        <h2 id="featured-heading" class="section-title reveal" data-split-text="words">Featured Release</h2>
 
         <div class="featured-wrap">
           <div class="cover-frame tilt reveal">
-            <img src="./assets/images/release-placeholder.jpg" alt="Featured release cover art" onerror="this.onerror=null;this.src='./assets/images/release-placeholder.jpg';">
+            <img src="./assets/images/release-placeholder.jpg" alt="Featured release cover art" data-reveal-image onerror="this.onerror=null;this.src='./assets/images/release-placeholder.jpg';">
           </div>
           <div class="featured-panel reveal">
             <span class="release-date">Coming Soon</span>
@@ -281,18 +284,31 @@
 
     <section class="statement mood-statement" aria-labelledby="statement-heading">
       <div class="container">
-        <h2 id="statement-heading" class="reveal">Psydance From The Dunes<br>To The Stars.</h2>
+        <h2 id="statement-heading" class="reveal" data-split-text="words">Psydance From The Dunes To Dance Floor Dimensions.</h2>
         <hr class="glow-divider">
         <p class="reveal">DuneSurfer creates Psydance: hypnotic electronic music built from desert silence, euphoric pressure, tribal rhythm and cosmic sound design. The sound is physical, cinematic and made for late-night movement.</p>
       </div>
     </section>
 
+    <div data-marquee aria-hidden="true">
+      <div class="marquee-inner">
+        <span>DuneSurfer</span>
+        <span class="marquee-accent">Psydance</span>
+        <span>Desert Bass</span>
+        <span class="marquee-accent">Cosmic Motion</span>
+        <span>Ancient Rhythm</span>
+        <span class="marquee-accent">Future Light</span>
+        <span>Enter The Frequency</span>
+        <span class="marquee-accent">DuneSurfer</span>
+      </div>
+    </div>
+
     <section class="cta-final" aria-labelledby="cta-heading">
       <div class="container">
         <h2 id="cta-heading" class="reveal">Enter The Frequency.</h2>
         <div class="hero-actions reveal">
-          <a class="btn btn-primary" href="./music.html">Enter The Frequency</a>
-          <a class="btn btn-secondary" href="./contact.html">Contact DuneSurfer</a>
+          <a class="btn btn-primary" href="./music.html" data-magnetic>Enter The Frequency</a>
+          <a class="btn btn-secondary" href="./contact.html" data-magnetic>Contact DuneSurfer</a>
         </div>
       </div>
     </section>
@@ -350,6 +366,7 @@
 
   <script src="./js/audio.js"></script>
   <script src="./js/main.js"></script>
-  <script src="./js/portal-disc.js" defer></script>
+  <script src="./js/portal.js" defer></script>
+  <script src="./js/interactions.js" defer></script>
 </body>
 </html>
