@@ -53,7 +53,7 @@
   dotStyle.width = '8px';
   dotStyle.height = '8px';
   dotStyle.borderRadius = '50%';
-  dotStyle.background = '#00e5ff';
+  dotStyle.background = '#C8944A';
   dotStyle.pointerEvents = 'none';
   dotStyle.zIndex = '99999';
   dotStyle.mixBlendMode = 'difference';

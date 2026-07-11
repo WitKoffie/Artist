@@ -44,9 +44,9 @@
   window.addEventListener('resize', resize);
 
   /* ── Colors ── */
-  var CYAN = new THREE.Color(0x00e5ff);
-  var MAGENTA = new THREE.Color(0xff2aaa);
-  var VIOLET = new THREE.Color(0x8b5cf6);
+  var CYAN = new THREE.Color(0x4ECDC4);
+  var MAGENTA = new THREE.Color(0xC8944A);
+  var VIOLET = new THREE.Color(0xE8B86D);
 
   /* ── Tunnel wall shader ── */
   var tunnelUniforms = {
