@@ -368,6 +368,14 @@ section {
   mix-blend-mode: luminosity;
   pointer-events: none;
 }
+.section-bg-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0.18;
+  mix-blend-mode: luminosity;
+  pointer-events: none;
+}
 
 .hero-grain {
   position: absolute; inset: 0;
@@ -734,6 +742,8 @@ section {
 
 /* ======================== STATEMENT ======================== */
 .statement {
+  position: relative;
+  overflow: hidden;
   text-align: center;
   padding: clamp(5rem, 12vw, 8rem) 0;
 }
@@ -780,6 +790,8 @@ section {
 
 /* ======================== PAGE HERO (inner pages) ======================== */
 .page-hero {
+  position: relative;
+  overflow: hidden;
   padding-top: clamp(8rem, 16vw, 10rem);
   padding-bottom: clamp(3rem, 6vw, 5rem);
 }
