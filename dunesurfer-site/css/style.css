@@ -1407,15 +1407,9 @@ body.loading {
   .cursor-dot, .cursor-ring { display: none !important; }
 }
 
-/* ── Split text ── */
-[data-split-text] .word {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
-}
-[data-split-text] .char {
-  display: inline-block;
-  will-change: transform;
+/* ── Text reveal (clip-path driven by GSAP) ── */
+[data-split-text] {
+  will-change: clip-path, transform;
 }
 
 /* ── Magnetic buttons ── */

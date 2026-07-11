@@ -160,76 +160,38 @@
   }
 
   /* ==========================================================
-     4. SPLIT-TEXT HEADLINE REVEALS
+     4. TEXT REVEALS ON SCROLL (clip-path wipe — works with gradient text)
      ========================================================== */
   $$('[data-split-text]').forEach(function (el) {
-    var mode = el.getAttribute('data-split-text') || 'chars';
-    var text = el.textContent;
-    var html = '';
+    if (el.closest('.hero')) return;
 
-    if (mode === 'words') {
-      var words = text.split(/(\s+)/);
-      words.forEach(function (w) {
-        if (/^\s+$/.test(w)) {
-          html += w;
-        } else {
-          html += '<span class="word" style="display:inline-block;overflow:hidden;vertical-align:top"><span class="word-inner" style="display:inline-block;will-change:transform">' + w + '</span></span>';
-        }
-      });
-    } else {
-      var wordChunks = text.split(/(\s+)/);
-      wordChunks.forEach(function (chunk) {
-        if (/^\s+$/.test(chunk)) {
-          html += chunk;
-        } else {
-          html += '<span class="word" style="display:inline-block;overflow:hidden;vertical-align:top">';
-          for (var i = 0; i < chunk.length; i++) {
-            html += '<span class="char" style="display:inline-block;will-change:transform">' + chunk[i] + '</span>';
-          }
-          html += '</span>';
-        }
-      });
+    el.classList.remove('reveal');
+
+    if (reducedMotion) {
+      el.style.opacity = '1';
+      el.style.clipPath = 'none';
+      return;
     }
 
-    el.innerHTML = html;
+    gsap.set(el, {
+      clipPath: 'inset(100% 0 0 0)',
+      y: 24,
+      opacity: 1
+    });
 
-    if (reducedMotion) return;
-
-    if (mode === 'words') {
-      var wordInners = $$('.word-inner', el);
-      gsap.set(wordInners, { y: '110%', opacity: 0 });
-      ScrollTrigger.create({
-        trigger: el,
-        start: 'top 85%',
-        once: true,
-        onEnter: function () {
-          gsap.to(wordInners, {
-            y: '0%',
-            opacity: 1,
-            stagger: 0.08,
-            duration: 0.7,
-            ease: 'power3.out'
-          });
-        }
-      });
-    } else {
-      var chars = $$('.char', el);
-      gsap.set(chars, { y: '110%', opacity: 0 });
-      ScrollTrigger.create({
-        trigger: el,
-        start: 'top 85%',
-        once: true,
-        onEnter: function () {
-          gsap.to(chars, {
-            y: '0%',
-            opacity: 1,
-            stagger: 0.02,
-            duration: 0.6,
-            ease: 'power3.out'
-          });
-        }
-      });
-    }
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 85%',
+      once: true,
+      onEnter: function () {
+        gsap.to(el, {
+          clipPath: 'inset(0% 0 0 0)',
+          y: 0,
+          duration: 1,
+          ease: 'power3.out'
+        });
+      }
+    });
   });
 
   /* ==========================================================
@@ -445,18 +407,31 @@
 
   $$('[data-scramble]').forEach(function (el) {
     if (reducedMotion) return;
+    if (el.hasAttribute('data-split-text')) return;
 
     var originalText = el.textContent;
     if (!el.getAttribute('data-scramble')) {
       el.setAttribute('data-scramble', originalText);
     }
 
+    el.classList.remove('reveal');
+
+    gsap.set(el, { opacity: 0, y: 12 });
+
     ScrollTrigger.create({
       trigger: el,
-      start: 'top 85%',
+      start: 'top 90%',
       once: true,
       onEnter: function () {
-        scrambleText(el);
+        gsap.to(el, {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: 'power2.out',
+          onComplete: function () {
+            scrambleText(el);
+          }
+        });
       }
     });
   });
