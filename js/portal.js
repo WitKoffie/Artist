@@ -393,17 +393,29 @@
   var hoverTarget = 0;
   var FADE_SPEED = 0.04;
 
+  var audioUnlocked = false;
+
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    hoverAudio.play().then(function () {
+      hoverAudio.pause();
+      hoverAudio.currentTime = 0;
+      audioUnlocked = true;
+    }).catch(function () {});
+  }
+
   function updateHoverAudio() {
-    hoverTarget = mouseOverDisc ? 1 : 0;
+    var wantSound = soundActive && mouseOverDisc;
+    hoverTarget = wantSound ? 1 : 0;
     hoverVolume += (hoverTarget - hoverVolume) * FADE_SPEED;
     if (hoverVolume < 0.005) hoverVolume = 0;
     if (hoverVolume > 0.995) hoverVolume = 1;
     hoverAudio.volume = hoverVolume * 0.7;
 
-    if (mouseOverDisc && !hoverPlaying) {
+    if (wantSound && !hoverPlaying && audioUnlocked) {
       hoverAudio.play().catch(function () {});
       hoverPlaying = true;
-    } else if (!mouseOverDisc && hoverPlaying && hoverVolume === 0) {
+    } else if (!wantSound && hoverPlaying && hoverVolume === 0) {
       hoverAudio.pause();
       hoverPlaying = false;
     }
@@ -415,6 +427,7 @@
   window.WKPortal = {
     setSoundActive: function (on) {
       soundActive = !!on;
+      if (on) unlockAudio();
       if (reducedMotion) renderer.render(scene, camera);
     }
   };
