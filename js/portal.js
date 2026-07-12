@@ -1,7 +1,7 @@
 /* ==========================================================================
    WitKoffie — 3D Sound Portal (Three.js)
-   Interactive coffee cup with ripple effect — move the mouse over the
-   coffee surface and the concentric grooves distort like a spoon stirring.
+   Displays the logo image as an interactive disc with ripple, rotation,
+   mouse tilt, bass pulses, steam and hover audio.
    ========================================================================== */
 
 (function () {
@@ -9,10 +9,8 @@
 
   var COLORS = {
     amber: 0xd69a3a,
-    gold: 0xb9822b,
     cream: 0xf5e8d0,
-    warmWhite: 0xfff8ea,
-    saucer: 0x0b0907
+    warmWhite: 0xfff8ea
   };
 
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -43,11 +41,8 @@
   var portal = new THREE.Group();
   scene.add(portal);
 
-  /* ---- coffee surface texture from logo image ----------------------------- */
-  var coffeeTextureReady = false;
-  var coffeeTexture = null;
-
-  function loadCoffeeTexture(callback) {
+  /* ---- texture loading --------------------------------------------------- */
+  function loadLogoTexture(callback) {
     var img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = function () {
@@ -55,36 +50,29 @@
       if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = 4;
       tex.needsUpdate = true;
-      coffeeTexture = tex;
-      coffeeTextureReady = true;
-      if (callback) callback(tex);
+      callback(tex);
     };
     img.onerror = function () {
-      coffeeTexture = makeFallbackTexture();
-      coffeeTextureReady = true;
-      if (callback) callback(coffeeTexture);
+      callback(makeFallbackTexture());
     };
     img.src = './assets/images/witkoffie-mark.jpg';
   }
 
   function makeFallbackTexture() {
-    var S = 1024, cv = document.createElement('canvas');
+    var S = 512, cv = document.createElement('canvas');
     cv.width = cv.height = S;
     var ctx = cv.getContext('2d'), c = S / 2;
     var grad = ctx.createRadialGradient(c, c, 0, c, c, c);
     grad.addColorStop(0, '#9c6b42');
-    grad.addColorStop(0.45, '#bd8f5e');
-    grad.addColorStop(0.85, '#e3cba3');
+    grad.addColorStop(0.5, '#bd8f5e');
     grad.addColorStop(1, '#eedec0');
     ctx.fillStyle = grad;
     ctx.beginPath(); ctx.arc(c, c, c, 0, Math.PI * 2); ctx.fill();
     var tex = new THREE.CanvasTexture(cv);
-    tex.anisotropy = 4;
     if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
     return tex;
   }
 
-  /* ---- glow texture ------------------------------------------------------- */
   function makeGlowTexture(inner, outer) {
     var S = 256, cv = document.createElement('canvas');
     cv.width = cv.height = S;
@@ -97,7 +85,7 @@
     return tex;
   }
 
-  /* ---- high-detail disc geometry ------------------------------------------ */
+  /* ---- disc geometry with subdivisions for ripple ------------------------ */
   function makeDiscGeometry(radius, rings, segments) {
     var verts = [], uvs = [], idx = [];
     verts.push(0, 0, 0); uvs.push(0.5, 0.5);
@@ -131,122 +119,46 @@
   }
 
   /* ---- build the portal --------------------------------------------------- */
-  var CUP_R = 1.7;
-  var RIM_THICK = 0.14;
-  var OUTER_RING_R = 2.45;
+  var DISC_R = 2.6;
+  var DISC_RINGS = 50;
+  var DISC_SEGS = 100;
 
-  // Ambient glow behind everything
+  // Subtle ambient glow behind the disc
   var halo = new THREE.Mesh(
-    new THREE.PlaneGeometry(5.6, 5.6),
+    new THREE.PlaneGeometry(7, 7),
     new THREE.MeshBasicMaterial({
-      map: makeGlowTexture('rgba(214,154,58,0.25)', 'rgba(214,154,58,0)'),
+      map: makeGlowTexture('rgba(214,154,58,0.18)', 'rgba(214,154,58,0)'),
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
     })
   );
-  halo.position.z = -0.6;
+  halo.position.z = -0.4;
   portal.add(halo);
 
-  // Golden outer ring (the circle around the cup)
-  var outerRing = new THREE.Mesh(
-    new THREE.TorusGeometry(OUTER_RING_R, 0.022, 12, 160),
-    new THREE.MeshBasicMaterial({ color: COLORS.amber })
-  );
-  portal.add(outerRing);
+  // The logo disc — entire logo image mapped onto a flat subdivided circle
+  var discGeo = makeDiscGeometry(DISC_R, DISC_RINGS, DISC_SEGS);
 
-  var outerRingGlow = new THREE.Mesh(
-    new THREE.RingGeometry(OUTER_RING_R - 0.17, OUTER_RING_R + 0.17, 128),
-    new THREE.MeshBasicMaterial({
-      color: COLORS.amber, transparent: true, opacity: 0.16,
-      depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide
-    })
-  );
-  outerRingGlow.position.z = -0.01;
-  portal.add(outerRingGlow);
-
-  // Dark fill between outer ring and cup (the black gap)
-  var darkFill = new THREE.Mesh(
-    new THREE.RingGeometry(CUP_R + RIM_THICK + 0.02, OUTER_RING_R - 0.03, 128),
-    new THREE.MeshBasicMaterial({
-      color: 0x0a0806, side: THREE.DoubleSide
-    })
-  );
-  darkFill.position.z = 0.01;
-  portal.add(darkFill);
-
-  // Cup rim (white/cream ring around coffee)
-  var cupRimMat = new THREE.MeshBasicMaterial({ color: 0xf0e8da });
-  var cupRim = new THREE.Mesh(
-    new THREE.TorusGeometry(CUP_R + RIM_THICK * 0.5, RIM_THICK * 0.5, 16, 128),
-    cupRimMat
-  );
-  cupRim.position.z = 0.18;
-  portal.add(cupRim);
-
-  // Inner rim highlight
-  var rimHighlight = new THREE.Mesh(
-    new THREE.TorusGeometry(CUP_R + RIM_THICK * 0.5, RIM_THICK * 0.52, 16, 128),
-    new THREE.MeshBasicMaterial({
-      color: 0xffffff, transparent: true, opacity: 0.12,
-      depthWrite: false, blending: THREE.AdditiveBlending
-    })
-  );
-  rimHighlight.position.z = 0.22;
-  portal.add(rimHighlight);
-
-  // Handle ("ear") — rectangular tab matching the hero-bg cup
-  var hW = 0.45, hH = 0.18, hR = 0.045;
-  var hX = CUP_R + RIM_THICK * 0.35;
-  var handleShape = new THREE.Shape();
-  handleShape.moveTo(0, hH);
-  handleShape.lineTo(hW - hR, hH);
-  handleShape.quadraticCurveTo(hW, hH, hW, hH - hR);
-  handleShape.lineTo(hW, -hH + hR);
-  handleShape.quadraticCurveTo(hW, -hH, hW - hR, -hH);
-  handleShape.lineTo(0, -hH);
-  var handleGeo = new THREE.ExtrudeGeometry(handleShape, {
-    depth: 0.08, bevelEnabled: true, bevelThickness: 0.02,
-    bevelSize: 0.02, bevelSegments: 3
-  });
-  var handle = new THREE.Mesh(handleGeo, cupRimMat);
-  handle.position.set(hX, 0, 0.12);
-  handle.rotation.y = 0;
-  portal.add(handle);
-
-  // Coffee surface
-  var COFFEE_R = CUP_R;
-  var DISC_RINGS = 40;
-  var DISC_SEGS = 80;
-  var coneGeo = makeDiscGeometry(COFFEE_R, DISC_RINGS, DISC_SEGS);
-
-  var pos = coneGeo.attributes.position;
+  var pos = discGeo.attributes.position;
   var vertCount = pos.count;
   var baseZ = new Float32Array(vertCount);
   for (var i = 0; i < vertCount; i++) {
-    var x = pos.getX(i), y = pos.getY(i);
-    var r = Math.sqrt(x * x + y * y) / COFFEE_R;
-    var z = -0.32 * (1 - r) * (1 - r);
-    pos.setZ(i, z);
-    baseZ[i] = z;
+    baseZ[i] = 0;
   }
-  coneGeo.computeVertexNormals();
-  coneGeo.computeBoundingSphere();
 
-  var coffeeMat = new THREE.MeshBasicMaterial({ color: 0x2a1810 });
-  var coffee = new THREE.Mesh(coneGeo, coffeeMat);
-  coffee.position.z = 0.16;
-  portal.add(coffee);
+  var discMat = new THREE.MeshBasicMaterial({ color: 0x1a1008, transparent: true });
+  var disc = new THREE.Mesh(discGeo, discMat);
+  portal.add(disc);
 
-  loadCoffeeTexture(function (tex) {
-    coffeeMat.map = tex;
-    coffeeMat.color.set(0xffffff);
-    coffeeMat.needsUpdate = true;
+  loadLogoTexture(function (tex) {
+    discMat.map = tex;
+    discMat.color.set(0xffffff);
+    discMat.needsUpdate = true;
   });
 
   // Bass pulse rings
   var PULSES = 3, pulses = [];
   for (var i = 0; i < PULSES; i++) {
     var m = new THREE.Mesh(
-      new THREE.RingGeometry(0.8, 0.84, 96),
+      new THREE.RingGeometry(1.2, 1.25, 96),
       new THREE.MeshBasicMaterial({
         color: COLORS.amber, transparent: true, opacity: 0,
         depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide
@@ -258,7 +170,7 @@
     pulses.push(m);
   }
 
-  // Steam
+  // Steam particles
   var steamCount = 26;
   var steamGeo = new THREE.BufferGeometry();
   var steamPos = new Float32Array(steamCount * 3);
@@ -282,11 +194,11 @@
 
   var cursorWorldX = 0, cursorWorldY = 0;
 
-  /* ---- ripple system (direct coordinate mapping — no raycasting) ---------- */
+  /* ---- ripple system ----------------------------------------------------- */
   var MAX_RIPPLES = 16;
   var ripples = [];
   var lastRipX = 999, lastRipY = 999;
-  var mouseOverCup = false;
+  var mouseOverDisc = false;
   var mouseLocalX = 0, mouseLocalY = 0;
   var containerMX = 9, containerMY = 9;
 
@@ -298,7 +210,7 @@
 
   container.addEventListener('pointerleave', function () {
     containerMX = 9; containerMY = 9;
-    mouseOverCup = false;
+    mouseOverDisc = false;
   }, { passive: true });
 
   /* ---- state -------------------------------------------------------------- */
@@ -347,37 +259,40 @@
     if (!running) return;
     t += 0.016;
 
-    coffee.rotation.z -= 0.001 + (audioPlaying ? 0.003 : 0);
+    // Slow rotation
+    disc.rotation.z -= 0.0008 + (audioPlaying ? 0.002 : 0);
 
     var energy = soundActive ? (audioPlaying ? 1 : 0.55) : 0.25;
     var breathe = 1 + Math.sin(t * 1.4) * 0.012 * (1 + energy);
     portal.scale.setScalar(breathe);
 
+    // Mouse tilt
     portal.rotation.x += (targetRX - portal.rotation.x) * 0.05;
     portal.rotation.y += (targetRY - portal.rotation.y) * 0.05;
     camera.position.z = 9.3 + scrollDepth * 1.6;
     portal.position.y = scrollDepth * 0.7;
 
-    var glowBase = soundActive ? 0.3 : 0.14;
-    outerRingGlow.material.opacity = glowBase + Math.sin(t * 2.1) * 0.05 * (1 + energy);
-    halo.material.opacity = 0.55 + energy * 0.35;
+    // Halo glow
+    halo.material.opacity = 0.45 + energy * 0.35;
 
+    // Bass pulse rings
     var pulseSpeed = audioPlaying ? 0.55 : (soundActive ? 0.3 : 0.16);
     pulses.forEach(function (p) {
       p.userData.t += 0.016 * pulseSpeed;
       if (p.userData.t > 1) p.userData.t -= 1;
       var f = p.userData.t;
-      p.scale.setScalar(1.55 + f * 1.05);
-      p.material.opacity = (1 - f) * 0.32 * (0.4 + energy);
+      p.scale.setScalar(1.2 + f * 1.3);
+      p.material.opacity = (1 - f) * 0.28 * (0.4 + energy);
     });
 
+    // Steam
     var sp = steam.geometry.attributes.position;
     for (var i = 0; i < steamCount; i++) {
       var sx = sp.getX(i), sy = sp.getY(i);
       sy += 0.006 + steamSeed[i] * 0.004;
       if (sy > 2.4) { sy = 0.2; sx = (Math.random() - 0.5) * 0.8; }
       var baseX = Math.sin(t * 0.8 + steamSeed[i] * 6.28 + sy) * 0.28 * (sy / 2.4 + 0.2);
-      if (mouseOverCup) {
+      if (mouseOverDisc) {
         var attractX = cursorWorldX - sx;
         var attractY = cursorWorldY - sy;
         var aDist = Math.sqrt(attractX * attractX + attractY * attractY);
@@ -407,10 +322,10 @@
       if (sc > 0) { worldX /= sc; worldY /= sc; }
 
       var dist = Math.sqrt(worldX * worldX + worldY * worldY);
-      mouseOverCup = dist < COFFEE_R * 0.92;
+      mouseOverDisc = dist < DISC_R * 0.88;
 
-      if (mouseOverCup) {
-        var angle = -coffee.rotation.z;
+      if (mouseOverDisc) {
+        var angle = -disc.rotation.z;
         var cosA = Math.cos(angle), sinA = Math.sin(angle);
         mouseLocalX = worldX * cosA - worldY * sinA;
         mouseLocalY = worldX * sinA + worldY * cosA;
@@ -428,17 +343,17 @@
         }
       }
     } else {
-      mouseOverCup = false;
+      mouseOverDisc = false;
     }
 
     while (ripples.length && t - ripples[0].birth > 4.5) ripples.shift();
 
-    var cpos = coffee.geometry.attributes.position;
+    var dpos = disc.geometry.attributes.position;
     var hasRipples = ripples.length > 0;
     for (var i = 0; i < vertCount; i++) {
       var z = baseZ[i];
       if (hasRipples) {
-        var vx = cpos.getX(i), vy = cpos.getY(i);
+        var vx = dpos.getX(i), vy = dpos.getY(i);
         for (var j = 0; j < ripples.length; j++) {
           var rip = ripples[j];
           var rdx = vx - rip.x, rdy = vy - rip.y;
@@ -448,15 +363,15 @@
           var distFromFront = Math.abs(d - waveFront);
           var ringFalloff = Math.exp(-distFromFront * distFromFront * 3);
           var timeFade = Math.exp(-age * 0.6);
-          var wave = Math.sin(d * 8 - age * 4) * 0.14;
+          var wave = Math.sin(d * 8 - age * 4) * 0.12;
           z += wave * ringFalloff * timeFade;
         }
       }
-      cpos.setZ(i, z);
+      dpos.setZ(i, z);
     }
     if (hasRipples) {
-      cpos.needsUpdate = true;
-      coffee.geometry.computeVertexNormals();
+      dpos.needsUpdate = true;
+      disc.geometry.computeVertexNormals();
     }
 
     renderer.render(scene, camera);
@@ -464,13 +379,12 @@
   }
 
   if (reducedMotion) {
-    outerRingGlow.material.opacity = 0.22;
     renderer.render(scene, camera);
   } else {
     requestAnimationFrame(tick);
   }
 
-  /* ---- cup hover audio ----------------------------------------------------- */
+  /* ---- hover audio -------------------------------------------------------- */
   var hoverAudio = new Audio('./assets/audio/promo.mp3');
   hoverAudio.loop = true;
   hoverAudio.volume = 0;
@@ -480,16 +394,16 @@
   var FADE_SPEED = 0.04;
 
   function updateHoverAudio() {
-    hoverTarget = mouseOverCup ? 1 : 0;
+    hoverTarget = mouseOverDisc ? 1 : 0;
     hoverVolume += (hoverTarget - hoverVolume) * FADE_SPEED;
     if (hoverVolume < 0.005) hoverVolume = 0;
     if (hoverVolume > 0.995) hoverVolume = 1;
     hoverAudio.volume = hoverVolume * 0.7;
 
-    if (mouseOverCup && !hoverPlaying) {
+    if (mouseOverDisc && !hoverPlaying) {
       hoverAudio.play().catch(function () {});
       hoverPlaying = true;
-    } else if (!mouseOverCup && hoverPlaying && hoverVolume === 0) {
+    } else if (!mouseOverDisc && hoverPlaying && hoverVolume === 0) {
       hoverAudio.pause();
       hoverPlaying = false;
     }
@@ -497,14 +411,11 @@
   }
   requestAnimationFrame(updateHoverAudio);
 
-  /* ---- public API ---------------------------------------------------------- */
+  /* ---- public API --------------------------------------------------------- */
   window.WKPortal = {
     setSoundActive: function (on) {
       soundActive = !!on;
-      if (reducedMotion) {
-        outerRingGlow.material.opacity = on ? 0.4 : 0.22;
-        renderer.render(scene, camera);
-      }
+      if (reducedMotion) renderer.render(scene, camera);
     }
   };
 })();
