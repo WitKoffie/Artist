@@ -920,6 +920,25 @@ body.sound-on .sound-hint { display: none; }
   box-shadow: 0 0 22px rgba(214, 154, 58, 0.6);
 }
 
+/* DJ Booth photo section */
+.dj-booth-section {
+  padding: clamp(2rem, 5vw, 4rem) 0;
+  background: var(--color-espresso);
+}
+.dj-booth-frame {
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-card);
+}
+.dj-booth-frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .cta-final {
   text-align: center;
   background:

@@ -43,12 +43,34 @@
   var portal = new THREE.Group();
   scene.add(portal);
 
-  /* ---- canvas texture: coffee surface ------------------------------------- */
-  function makeCoffeeTexture() {
+  /* ---- coffee surface texture from logo image ----------------------------- */
+  var coffeeTextureReady = false;
+  var coffeeTexture = null;
+
+  function loadCoffeeTexture(callback) {
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function () {
+      var tex = new THREE.Texture(img);
+      if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = 4;
+      tex.needsUpdate = true;
+      coffeeTexture = tex;
+      coffeeTextureReady = true;
+      if (callback) callback(tex);
+    };
+    img.onerror = function () {
+      coffeeTexture = makeFallbackTexture();
+      coffeeTextureReady = true;
+      if (callback) callback(coffeeTexture);
+    };
+    img.src = './assets/images/witkoffie-mark.jpg';
+  }
+
+  function makeFallbackTexture() {
     var S = 1024, cv = document.createElement('canvas');
     cv.width = cv.height = S;
     var ctx = cv.getContext('2d'), c = S / 2;
-
     var grad = ctx.createRadialGradient(c, c, 0, c, c, c);
     grad.addColorStop(0, '#9c6b42');
     grad.addColorStop(0.45, '#bd8f5e');
@@ -56,30 +78,6 @@
     grad.addColorStop(1, '#eedec0');
     ctx.fillStyle = grad;
     ctx.beginPath(); ctx.arc(c, c, c, 0, Math.PI * 2); ctx.fill();
-
-    var labelR = S * 0.17, n = 22;
-    for (var i = 0; i < n; i++) {
-      var r = labelR + ((c - 14 - labelR) * (i + 1)) / n;
-      ctx.beginPath(); ctx.arc(c, c, r, 0, Math.PI * 2);
-      ctx.strokeStyle = i % 2 ? 'rgba(100,62,34,0.5)' : 'rgba(255,250,238,0.6)';
-      ctx.lineWidth = i % 2 ? 2.5 : 4;
-      ctx.stroke();
-    }
-
-    var lab = ctx.createRadialGradient(c, c, 0, c, c, labelR);
-    lab.addColorStop(0, '#d0a049'); lab.addColorStop(1, '#a9772a');
-    ctx.fillStyle = lab;
-    ctx.beginPath(); ctx.arc(c, c, labelR, 0, Math.PI * 2); ctx.fill();
-    [0.94, 0.78].forEach(function (f, i) {
-      ctx.beginPath(); ctx.arc(c, c, labelR * f, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(250,232,190,' + (0.85 - i * 0.3) + ')';
-      ctx.lineWidth = 2; ctx.stroke();
-    });
-    ctx.fillStyle = '#fff8ea';
-    ctx.beginPath(); ctx.arc(c, c, labelR * 0.2, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#3a2712';
-    ctx.beginPath(); ctx.arc(c, c, labelR * 0.07, 0, Math.PI * 2); ctx.fill();
-
     var tex = new THREE.CanvasTexture(cv);
     tex.anisotropy = 4;
     if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
@@ -233,12 +231,16 @@
   coneGeo.computeVertexNormals();
   coneGeo.computeBoundingSphere();
 
-  var coffee = new THREE.Mesh(
-    coneGeo,
-    new THREE.MeshBasicMaterial({ map: makeCoffeeTexture() })
-  );
+  var coffeeMat = new THREE.MeshBasicMaterial({ color: 0x2a1810 });
+  var coffee = new THREE.Mesh(coneGeo, coffeeMat);
   coffee.position.z = 0.16;
   portal.add(coffee);
+
+  loadCoffeeTexture(function (tex) {
+    coffeeMat.map = tex;
+    coffeeMat.color.set(0xffffff);
+    coffeeMat.needsUpdate = true;
+  });
 
   // Bass pulse rings
   var PULSES = 3, pulses = [];
