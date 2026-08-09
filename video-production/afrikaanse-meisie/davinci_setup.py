@@ -229,17 +229,21 @@ def main():
     pm = resolve.GetProjectManager()
     print("[OK] Connected to DaVinci Resolve")
 
-    # ── Create project ──────────────────────────────────────────
-    existing = pm.LoadProject(PROJECT_NAME)
-    if existing:
-        project = existing
-        print(f"[OK] Opened existing project: {PROJECT_NAME}")
+    # ── Open project (use current if already open) ────────────────
+    project = pm.GetCurrentProject()
+    if project and project.GetName().lower() == PROJECT_NAME.lower():
+        print(f"[OK] Using currently open project: {project.GetName()}")
     else:
-        project = pm.CreateProject(PROJECT_NAME)
-        if not project:
-            print(f"[ERROR] Could not create project '{PROJECT_NAME}'")
-            return
-        print(f"[OK] Created project: {PROJECT_NAME}")
+        existing = pm.LoadProject(PROJECT_NAME)
+        if existing:
+            project = existing
+            print(f"[OK] Opened existing project: {PROJECT_NAME}")
+        else:
+            project = pm.CreateProject(PROJECT_NAME)
+            if not project:
+                print(f"[ERROR] Could not create project '{PROJECT_NAME}'")
+                return
+            print(f"[OK] Created project: {PROJECT_NAME}")
 
     # ── Project settings ────────────────────────────────────────
     project.SetSetting("timelineResolutionWidth", str(WIDTH))
