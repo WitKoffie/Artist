@@ -42,7 +42,7 @@ def get_resolve():
 
 # ── CONFIG ──────────────────────────────────────────────────────────────────
 
-PROJECT_NAME = "Afrikaanse Meisie - WitKoffie"
+PROJECT_NAME = "afrikaner meisie"
 TIMELINE_NAME = "Afrikaanse Meisie - Master"
 
 MEDIA_DIR = r"G:\Music Releases\WitKoffie\WitKoffie Album\Afrikaanse Meisie - WitKoffie\Video\Raw"
