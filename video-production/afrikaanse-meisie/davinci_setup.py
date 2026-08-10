@@ -36,7 +36,7 @@ def get_resolve():
     return dvr.scriptapp("Resolve")
 
 
-# ── CONFIG ──────────────────────────────────────────────────────────────────
+# -- CONFIG -------------------------------------------------------------------
 
 PROJECT_NAME = "afrikaner meisie"
 TIMELINE_NAME = "Afrikaanse Meisie - Master"
@@ -259,7 +259,7 @@ def main():
     pm = resolve.GetProjectManager()
     print("[OK] Connected to DaVinci Resolve")
 
-    # ── Open project ────────────────────────────────────────────
+    # -- Open project --------------------------------------------
     project = pm.GetCurrentProject()
     if project and project.GetName().lower() == PROJECT_NAME.lower():
         print(f"[OK] Project: {project.GetName()}")
@@ -280,7 +280,7 @@ def main():
     mp = project.GetMediaPool()
     root_folder = mp.GetRootFolder()
 
-    # ── Ensure bins exist ───────────────────────────────────────
+    # -- Ensure bins exist ---------------------------------------
     existing_bins = {f.GetName(): f for f in root_folder.GetSubFolderList()}
     bin_refs = {}
     for bin_name in BINS:
@@ -292,7 +292,7 @@ def main():
             if new_bin:
                 bin_refs[bin_name] = new_bin
 
-    # ── Collect ALL clips from media pool ───────────────────────
+    # -- Collect ALL clips from media pool -----------------------
     all_pool_clips = {}
     def collect_clips(folder):
         for clip in folder.GetClipList():
@@ -301,7 +301,7 @@ def main():
             collect_clips(sub)
     collect_clips(root_folder)
 
-    # ── Match clips by hash ID ──────────────────────────────────
+    # -- Match clips by hash ID ----------------------------------
     scene_to_clip = {}
     scene_to_original = {}
     matched_names = set()
@@ -319,7 +319,7 @@ def main():
             scene_to_original[base] = clip_name
             matched_names.add(clip_name)
 
-    # ── Find audio ──────────────────────────────────────────────
+    # -- Find audio ----------------------------------------------
     audio_clip = None
     for cname, clip in all_pool_clips.items():
         lower = cname.lower()
@@ -332,9 +332,9 @@ def main():
                 audio_clip = clip
                 break
 
-    # ════════════════════════════════════════════════════════════
+    # ============================================================
     # PHASE 1: ASSESS ALL CLIPS
-    # ════════════════════════════════════════════════════════════
+    # ============================================================
     print()
     print("=" * 70)
     print("  PHASE 1: CLIP ASSESSMENT")
@@ -350,7 +350,7 @@ def main():
     print()
 
     print(f"  {'#':>3}  {'Scene Name':<42} {'Res':<12} {'Dur':>6} {'Target':>7} {'Status'}")
-    print(f"  {'─'*3}  {'─'*42} {'─'*12} {'─'*6} {'─'*7} {'─'*10}")
+    print(f"  {'-'*3}  {'-'*42} {'-'*12} {'-'*6} {'-'*7} {'-'*10}")
 
     warnings = []
     running_tc = 0.0
@@ -384,7 +384,7 @@ def main():
             print(w)
         print()
 
-    # ── Move clips to bins ──────────────────────────────────────
+    # -- Move clips to bins --------------------------------------
     if "Audio" in bin_refs and audio_clip:
         mp.MoveClips([audio_clip], bin_refs["Audio"])
 
@@ -407,15 +407,15 @@ def main():
     print("[OK] Clips organized into bins")
     print()
 
-    # ════════════════════════════════════════════════════════════
+    # ============================================================
     # PHASE 2: BUILD TIMELINE
-    # ════════════════════════════════════════════════════════════
+    # ============================================================
     print("=" * 70)
     print("  PHASE 2: BUILDING GAPLESS TIMELINE")
     print("=" * 70)
     print()
 
-    # ── Delete old timeline and create fresh ────────────────────
+    # -- Delete old timeline and create fresh --------------------
     mp.SetCurrentFolder(root_folder)
     timelines_to_delete = []
     for i in range(1, project.GetTimelineCount() + 1):
@@ -435,7 +435,7 @@ def main():
     print(f"[OK] Created fresh timeline: {TIMELINE_NAME}")
     print()
 
-    # ── Place audio FIRST on A1 (WAV = audio-only, no video) ───
+    # -- Place audio FIRST on A1 (WAV = audio-only, no video) ---
     if audio_clip:
         result = mp.AppendToTimeline([{
             "mediaPoolItem": audio_clip,
@@ -445,12 +445,12 @@ def main():
         if result:
             print(f"[OK] Audio on A1: {audio_clip.GetName()}")
         else:
-            print("[WARN] Could not place audio — drag Afrikaanse Meisie.wav to A1")
+            print("[WARN] Could not place audio -- drag Afrikaanse Meisie.wav to A1")
     else:
-        print("[WARN] No WAV found — import and drag to A1 manually")
+        print("[WARN] No WAV found -- import and drag to A1 manually")
     print()
 
-    # ── Place video clips sequentially on V1 (video only) ──────
+    # -- Place video clips sequentially on V1 (video only) ------
     print("Placing clips gaplessly on V1 (video only, no embedded audio)...")
     print()
     placed = 0
@@ -493,9 +493,9 @@ def main():
         print()
         print("[WARN] Skipped clips:")
         for idx, sname, dur in skipped:
-            print(f"  #{idx} {sname} ({dur}s) — not found in pool")
+            print(f"  #{idx} {sname} ({dur}s) -- not found in pool")
 
-    # ── Clean up: delete any embedded audio that landed on A2+ ──
+    # -- Clean up: delete any embedded audio that landed on A2+ --
     print()
     print("Cleaning up stray audio tracks...")
     for track_idx in range(2, 6):
@@ -505,7 +505,7 @@ def main():
             print(f"  [OK] Cleared {len(items)} stray audio clips from A{track_idx}")
     print()
 
-    # ── Add sync markers ────────────────────────────────────────
+    # -- Add sync markers ----------------------------------------
     marker_count = 0
     for tc, audio_event, visual_event in SYNC_MARKERS:
         frame = tc_to_frames(tc)
@@ -515,11 +515,11 @@ def main():
     print(f"[OK] Added {marker_count} sync markers")
     print()
 
-    # ════════════════════════════════════════════════════════════
+    # ============================================================
     # DONE
-    # ════════════════════════════════════════════════════════════
+    # ============================================================
     print("=" * 70)
-    print("  ASSEMBLY COMPLETE — GAPLESS EDIT")
+    print("  ASSEMBLY COMPLETE -- GAPLESS EDIT")
     print("=" * 70)
     print()
     print("  Timeline structure:")
@@ -529,7 +529,7 @@ def main():
     print("  Next steps:")
     print("  1. LOCK A1 (click padlock on audio track)")
     print("  2. Right-click clips in pool -> Generate Optimized Media")
-    print("  3. Play through — slip clips L/R by frames to fine-tune sync")
+    print("  3. Play through -- slip clips L/R by frames to fine-tune sync")
     print("     Blue markers show where lyrics/beats should land")
     print("  4. Add 3s fade-to-black after last clip:")
     print("     Effects > Generators > Solid Color > Black (3s)")
