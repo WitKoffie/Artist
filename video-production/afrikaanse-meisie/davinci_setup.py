@@ -28,7 +28,7 @@ def get_resolve():
 
 # -- CONFIG -------------------------------------------------------------------
 
-PROJECT_NAME = "afrikaner meisie"
+PROJECT_NAME = "Afrikaner Meisie #2"
 TIMELINE_NAME = "Afrikaanse Meisie - Master"
 MEDIA_DIR = r"G:\Music Releases\WitKoffie\WitKoffie Album\Afrikaanse Meisie - WitKoffie\Video\Raw"
 
@@ -36,7 +36,6 @@ FPS = 24
 WIDTH = 1920
 HEIGHT = 1080
 
-# Hash ID -> scene name (matches original hf_*.mp4 filenames)
 HASH_TO_SCENE = {
     "d8cf0db5": "1_jonkershoek_valley_back_to_camera",
     "85fcae59": "1.1_jonkershoek_low_left_angle",
@@ -82,34 +81,6 @@ HASH_TO_SCENE = {
     "c853f515": "19.1_final_smile_zoom_ALT",
 }
 
-BINS = [
-    "Audio",
-    "Scene 01-05 Stellenbosch",
-    "Scene 06 DJ1",
-    "Scene 07-08 NYC Berlin",
-    "Scene 09 SP Paris",
-    "Scene 10-12 Home Stars Dance",
-    "Scene 13 DJ2",
-    "Scene 14 Montage",
-    "Scene 15-17 Return",
-    "Scene 18 DJ Final",
-    "Scene 19 Final",
-    "Old Redos",
-]
-
-BIN_SCENE_MAP = {
-    "Scene 01-05 Stellenbosch": ["1_", "1.1_", "2_", "2.1_", "3_", "3.1_", "4_", "4.1_", "5_", "5.1_"],
-    "Scene 06 DJ1": ["6_", "6.1_"],
-    "Scene 07-08 NYC Berlin": ["7_", "7.1_", "8_", "8.1_"],
-    "Scene 09 SP Paris": ["9_", "9.1_"],
-    "Scene 10-12 Home Stars Dance": ["10_", "10.1_", "11_", "11.1_", "12_", "12.1_"],
-    "Scene 13 DJ2": ["13_", "13.1_"],
-    "Scene 14 Montage": ["14.1_", "14.2_", "14.3_", "14.4_"],
-    "Scene 15-17 Return": ["15_", "15.1_", "16_", "16.1_", "17_", "17.1_"],
-    "Scene 18 DJ Final": ["18_", "18.1_"],
-    "Scene 19 Final": ["19_"],
-}
-
 # Timeline edit: (scene_name, target_duration_seconds, music_sync_note)
 # Synced to WAV timestamps. Clips play at natural duration (no trimming).
 # Includes strategic repeats to fill full song length (~4:48).
@@ -140,49 +111,48 @@ EDIT_LIST = [
     ("5.1_valley_behind_shoulder",           6.0, "Over shoulder, emotional"),
     ("3_gravel_road_departure",              6.0, "Building to vocals"),
     # --- FIRST VOCALS 0:57 - Face reveal, energy grows (6 clips ~36s) ---
-    # Added landscape intercuts so vocals section fills properly
     ("2_mountain_face_reveal",               6.0, "0:57 FACE REVEAL at vocal"),
     ("2.1_mountain_low_angle_up",            6.0, "Low angle power"),
     ("16.1_stoep_over_shoulder_valley",       6.0, "Valley view, emotional"),
     ("10.1_farmhouse_doorway_inside",        6.0, "Looking out, longing"),
     ("15_golden_return_approach",             6.0, "Golden light, building"),
     ("6_dj_witkoffie_front_push",            6.0, "DJ enters, energy rises"),
-    # --- CHORUS 1 ~1:30 - "Afrikaanse meisie" DJ energy (2 clips ~12s) ---
+    # --- CHORUS 1 ~1:30 (2 clips ~12s) ---
     ("6.1_dj_witkoffie_high_angle",          6.0, "1:29 CHORUS - DJ above"),
     ("6_dj_witkoffie_front_push_ALT",        6.0, "DJ ALT take"),
-    # --- NYC ~1:42 - English lyric (2 clips ~12s) ---
+    # --- NYC ~1:42 (2 clips ~12s) ---
     ("7_new_york_rain_walk",                 6.0, "1:44 NYC rain walk"),
     ("14.1_nyc_looking_up",                  6.0, "NYC looking up at buildings"),
-    # --- BERLIN ~1:54 - German lyric (1 clip ~6s) ---
+    # --- BERLIN ~1:54 (1 clip ~6s) ---
     ("8_berlin_underpass_tracking",          6.0, "1:54 Berlin underpass"),
-    # --- CHORUS 2 ~2:00 - "conquer the world" (3 clips ~18s) ---
+    # --- CHORUS 2 ~2:00 (3 clips ~18s) ---
     ("9_sao_paulo_alive_spin",               6.0, "2:01 SP alive, conquer"),
     ("9.1_paris_grace_bridge",               6.0, "Paris bridge grace"),
     ("6_dj_witkoffie_front_push",            6.0, "DJ energy bridge"),
-    # --- VERSE 3 ~2:18 - "She left the dirt road" (5 clips ~30s) ---
+    # --- VERSE 3 ~2:18 (5 clips ~30s) ---
     ("10_farmhouse_stoep_homesick",          6.0, "2:15 Homesick stoep"),
     ("10.1_farmhouse_doorway_inside",        6.0, "Inside looking out"),
     ("11_starfield_arms_rising",             6.0, "Arms rising, stars"),
     ("11.1_starfield_birds_eye",             6.0, "Bird's eye starfield"),
     ("10_farmhouse_stoep_homesick",          6.0, "Homesick callback"),
-    # --- BREAKDOWN ~2:48 - fire dance + memories + DJ build (6 clips ~36s) ---
+    # --- BREAKDOWN ~2:48 (6 clips ~36s) ---
     ("12_fire_dance_low_angle",              6.0, "2:45 BREAKDOWN fire"),
     ("12.1_fire_dance_orbit",                6.0, "Fire orbit, primal"),
     ("7_new_york_rain_walk",                 6.0, "NYC memory flash"),
     ("8_berlin_underpass_tracking",          6.0, "Berlin memory flash"),
     ("13_dj_witkoffie_threequarter",         6.0, "DJ building energy"),
     ("13.1_dj_witkoffie_over_shoulder",      6.0, "DJ over shoulder"),
-    # --- REPRISE ~3:24 - city montage + DJ peak (6 clips ~36s) ---
+    # --- REPRISE ~3:24 (6 clips ~36s) ---
     ("14.1_nyc_looking_up",                  6.0, "3:17 REPRISE NYC up"),
     ("14.2_berlin_glance_back",              6.0, "Berlin glance back"),
     ("14.3_sao_paulo_laughing",              6.0, "SP laughing"),
     ("14.4_paris_bridge_turn",               6.0, "Paris turn"),
     ("6.1_dj_witkoffie_high_angle",          6.0, "DJ peak callback"),
     ("15_golden_return_approach",             6.0, "Golden return"),
-    # --- PEAK ~4:00 - golden + at peace (2 clips ~12s) ---
+    # --- PEAK ~4:00 (2 clips ~12s) ---
     ("15.1_golden_return_right_profile",      6.0, "3:45 PEAK golden"),
     ("16_stoep_at_peace_smile",              6.0, "At peace, smiling"),
-    # --- FADING/OUTRO ~4:12 - walking home, callbacks (7 clips ~42s) ---
+    # --- FADING/OUTRO ~4:12 (7 clips ~42s) ---
     ("16.1_stoep_over_shoulder_valley",       6.0, "4:00 Valley view"),
     ("17_walking_home_toward",               6.0, "Walking home"),
     ("17.1_walking_home_left_profile",       6.0, "Left profile"),
@@ -190,7 +160,7 @@ EDIT_LIST = [
     ("1_jonkershoek_valley_back_to_camera",  6.0, "Back to where it started"),
     ("18_dj_final_dolly_out",                6.0, "DJ final dolly"),
     ("19.1_final_smile_zoom",                6.0, "Smile, letting go"),
-    # --- FINAL - orbit + smile + DJ walks away (3 clips ~18s) ---
+    # --- FINAL (3 clips ~18s) ---
     ("19_final_180_orbit",                   6.0, "Final orbit"),
     ("19.1_final_smile_zoom_ALT",            6.0, "ALT smile"),
     ("18.1_dj_final_right_profile",          6.0, "DJ walks away -> black"),
@@ -206,7 +176,7 @@ SYNC_MARKERS = [
     ("00:02:01:00", "CHORUS 2: conquer the world", "Scene 9 Sao Paulo"),
     ("00:02:15:00", "She left the dirt road",      "Scene 10 farmhouse"),
     ("00:02:45:00", "BREAKDOWN - fire dance",      "Scene 12 fire low angle"),
-    ("00:03:01:00", "City memories flash",         "Scenes 7.1+8.1 profiles"),
+    ("00:03:01:00", "City memories flash",         "Scenes 7+8 profiles"),
     ("00:03:17:00", "MULTILINGUAL REPRISE",        "Scene 14 city montage"),
     ("00:03:38:00", "Golden return",               "Scene 15 approach"),
     ("00:03:45:00", "ABSOLUTE PEAK 47%",           "Scene 15.1+16 at peace"),
@@ -235,7 +205,6 @@ def frames_to_tc(frames, fps=FPS):
 
 
 def get_clip_props(clip):
-    """Get clip duration and resolution from media pool item."""
     props = clip.GetClipProperty()
     duration = "?"
     res = "?"
@@ -276,8 +245,8 @@ def get_clip_props(clip):
 
 def main():
     print("=" * 70)
-    print("  AFRIKAANSE MEISIE - FULL TIMELINE ASSEMBLY")
-    print("  Assess -> Clear -> Place gaplessly -> Sync to music")
+    print("  AFRIKAANSE MEISIE #2 - FRESH PROJECT + FULL ASSEMBLY")
+    print("  Create project -> Import all -> Build timeline")
     print("=" * 70)
     print()
 
@@ -289,18 +258,17 @@ def main():
     pm = resolve.GetProjectManager()
     print("[OK] Connected to DaVinci Resolve")
 
-    # -- Open project --------------------------------------------
-    project = pm.GetCurrentProject()
-    if project and project.GetName().lower() == PROJECT_NAME.lower():
-        print(f"[OK] Project: {project.GetName()}")
-    else:
-        existing = pm.LoadProject(PROJECT_NAME)
-        if existing:
-            project = existing
-            print(f"[OK] Opened: {PROJECT_NAME}")
+    # -- Create fresh project ------------------------------------
+    project = pm.CreateProject(PROJECT_NAME)
+    if not project:
+        project = pm.LoadProject(PROJECT_NAME)
+        if project:
+            print(f"[OK] Project '{PROJECT_NAME}' already exists, opened it")
         else:
-            print(f"[ERROR] Could not open project '{PROJECT_NAME}'")
+            print(f"[ERROR] Could not create or open project '{PROJECT_NAME}'")
             return
+    else:
+        print(f"[OK] Created new project: {PROJECT_NAME}")
 
     project.SetSetting("timelineResolutionWidth", str(WIDTH))
     project.SetSetting("timelineResolutionHeight", str(HEIGHT))
@@ -310,17 +278,31 @@ def main():
     mp = project.GetMediaPool()
     root_folder = mp.GetRootFolder()
 
-    # -- Ensure bins exist ---------------------------------------
-    existing_bins = {f.GetName(): f for f in root_folder.GetSubFolderList()}
-    bin_refs = {}
-    for bin_name in BINS:
-        if bin_name in existing_bins:
-            bin_refs[bin_name] = existing_bins[bin_name]
+    # -- Import ALL media from Raw folder (flat, no bins) --------
+    print()
+    print(f"[...] Importing all media from: {MEDIA_DIR}")
+    mp.SetCurrentFolder(root_folder)
+
+    if not os.path.isdir(MEDIA_DIR):
+        print(f"[ERROR] Directory not found: {MEDIA_DIR}")
+        return
+
+    media_files = []
+    for f in os.listdir(MEDIA_DIR):
+        full_path = os.path.join(MEDIA_DIR, f)
+        if os.path.isfile(full_path):
+            ext = f.lower().rsplit(".", 1)[-1] if "." in f else ""
+            if ext in ("mp4", "mov", "avi", "mkv", "mxf", "wav", "mp3", "aac", "flac"):
+                media_files.append(full_path)
+
+    print(f"[OK] Found {len(media_files)} media files")
+
+    if media_files:
+        imported = mp.ImportMedia(media_files)
+        if imported:
+            print(f"[OK] Imported {len(imported)} clips into Media Pool root")
         else:
-            mp.SetCurrentFolder(root_folder)
-            new_bin = mp.AddSubFolder(root_folder, bin_name)
-            if new_bin:
-                bin_refs[bin_name] = new_bin
+            print("[WARN] ImportMedia returned nothing -- files may already be imported")
 
     # -- Collect ALL clips from media pool -----------------------
     all_pool_clips = {}
@@ -330,24 +312,22 @@ def main():
         for sub in folder.GetSubFolderList():
             collect_clips(sub)
     collect_clips(root_folder)
+    print(f"[OK] {len(all_pool_clips)} clips in media pool")
 
     # -- Match clips by hash ID ----------------------------------
     scene_to_clip = {}
     scene_to_original = {}
-    matched_names = set()
     for clip_name, clip in all_pool_clips.items():
         for hash_id, scene_name in HASH_TO_SCENE.items():
             if hash_id in clip_name:
                 if scene_name not in scene_to_clip:
                     scene_to_clip[scene_name] = clip
                     scene_to_original[scene_name] = clip_name
-                    matched_names.add(clip_name)
                 break
         base = os.path.splitext(clip_name)[0]
         if base in HASH_TO_SCENE.values() and base not in scene_to_clip:
             scene_to_clip[base] = clip
             scene_to_original[base] = clip_name
-            matched_names.add(clip_name)
 
     # -- Find audio ----------------------------------------------
     audio_clip = None
@@ -396,10 +376,7 @@ def main():
             if actual_s > 0 and actual_s < target_dur:
                 status = f"SHORT ({actual_s:.1f}<{target_dur:.1f})"
                 warnings.append(f"  Clip {i} '{scene_name}': source {actual_s:.1f}s < target {target_dur:.1f}s")
-            elif actual_s > 0:
-                status = "OK"
 
-            tc_str = f"{int(running_tc//60)}:{running_tc%60:05.2f}"
             print(f"  {i:3d}  {scene_name:<42} {res:<12} {dur_str:>6} {target_dur:>5.1f}s  {status}")
         else:
             print(f"  {i:3d}  {scene_name:<42} {'MISSING':<12} {'?':>6} {target_dur:>5.1f}s  NOT FOUND")
@@ -414,29 +391,6 @@ def main():
             print(w)
         print()
 
-    # -- Move clips to bins --------------------------------------
-    if "Audio" in bin_refs and audio_clip:
-        mp.MoveClips([audio_clip], bin_refs["Audio"])
-
-    for bin_name, prefixes in BIN_SCENE_MAP.items():
-        if bin_name not in bin_refs:
-            continue
-        clips_to_move = []
-        for sname, clip in scene_to_clip.items():
-            for prefix in prefixes:
-                if sname.startswith(prefix):
-                    clips_to_move.append(clip)
-                    break
-        if clips_to_move:
-            mp.MoveClips(clips_to_move, bin_refs[bin_name])
-
-    if "Old Redos" in bin_refs:
-        unmatched = [c for n, c in all_pool_clips.items() if n not in matched_names and c != audio_clip]
-        if unmatched:
-            mp.MoveClips(unmatched, bin_refs["Old Redos"])
-    print("[OK] Clips organized into bins")
-    print()
-
     # ============================================================
     # PHASE 2: BUILD TIMELINE
     # ============================================================
@@ -445,7 +399,6 @@ def main():
     print("=" * 70)
     print()
 
-    # -- Delete old timeline and create fresh --------------------
     mp.SetCurrentFolder(root_folder)
     timelines_to_delete = []
     for i in range(1, project.GetTimelineCount() + 1):
@@ -465,7 +418,7 @@ def main():
     print(f"[OK] Created fresh timeline: {TIMELINE_NAME}")
     print()
 
-    # -- Place audio FIRST on A1 (WAV = audio-only, no video) ---
+    # -- Place audio on A1 ---------------------------------------
     if audio_clip:
         result = mp.AppendToTimeline([{
             "mediaPoolItem": audio_clip,
@@ -475,14 +428,12 @@ def main():
         if result:
             print(f"[OK] Audio on A1: {audio_clip.GetName()}")
         else:
-            print("[WARN] Could not place audio -- drag Afrikaanse Meisie.wav to A1")
+            print("[WARN] Could not place audio -- drag WAV to A1")
     else:
         print("[WARN] No WAV found -- import and drag to A1 manually")
     print()
 
-    # -- Place video clips sequentially on V1 (video only) ------
-    # Use full clip duration (no endFrame trimming) so every frame of
-    # footage fills the timeline. Clips play at their natural length.
+    # -- Place video clips on V1 ---------------------------------
     print("Placing clips gaplessly on V1 (full duration, no trimming)...")
     print()
     placed = 0
@@ -528,7 +479,7 @@ def main():
         for idx, sname, dur in skipped:
             print(f"  #{idx} {sname} ({dur}s) -- not found in pool")
 
-    # -- Fill any remaining gap to match WAV length ----------------
+    # -- Fill any remaining gap ----------------------------------
     wav_seconds = 0
     if audio_clip:
         wav_props = get_clip_props(audio_clip)
@@ -550,10 +501,6 @@ def main():
             "3_gravel_road_departure",
             "9_sao_paulo_alive_spin",
         ]
-        # Insert BEFORE the last clip (18.1 must stay last)
-        # We already appended 18.1, so we remove it, add fills, re-add it
-        # Actually just append fills -- user can drag 18.1 to end
-        last_clip_scene = "18.1_dj_final_right_profile"
         for fs in fill_scenes:
             if gap <= 2.0:
                 break
@@ -577,12 +524,8 @@ def main():
         actual_min = int(actual_time // 60)
         actual_sec = actual_time % 60
         print(f"[OK] V1 after fill: {actual_min}:{actual_sec:04.1f}")
-        if gap > 2.0:
-            print(f"[WARN] Still {gap:.1f}s gap -- drag 18.1 to end manually")
-        else:
-            print("[NOTE] 18.1 (DJ walks away) may need dragging to last position")
 
-    # -- Clean up: delete any embedded audio that landed on A2+ --
+    # -- Clean up stray audio tracks -----------------------------
     print()
     print("Cleaning up stray audio tracks...")
     for track_idx in range(2, 6):
@@ -606,7 +549,7 @@ def main():
     # DONE
     # ============================================================
     print("=" * 70)
-    print("  ASSEMBLY COMPLETE -- GAPLESS EDIT")
+    print("  ASSEMBLY COMPLETE")
     print("=" * 70)
     print()
     print("  Timeline structure:")
@@ -614,14 +557,7 @@ def main():
     print(f"  V1: {placed} clips, back-to-back, full duration each")
     print(f"  V1 total: {actual_min}:{actual_sec:04.1f}")
     print()
-    print("  Next steps:")
-    print("  1. LOCK A1 (click padlock on audio track)")
-    print("  2. Right-click clips in pool -> Generate Optimized Media")
-    print("  3. Play through -- slip clips L/R by frames to fine-tune sync")
-    print("     Blue markers show where lyrics/beats should land")
-    print("  4. Add 3s fade-to-black after last clip:")
-    print("     Effects > Generators > Solid Color > Black (3s)")
-    print("  5. Export: Deliver > MP4 H.264 1080p 24fps 20Mbps")
+    print("  All clips visible in Media Pool root (no folders)")
     print()
 
 
