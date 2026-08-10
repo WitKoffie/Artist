@@ -153,9 +153,9 @@ EDIT_LIST = [
     # Added landscape intercuts so vocals section fills properly
     ("2_mountain_face_reveal",               6.0, "0:57 FACE REVEAL at vocal"),
     ("2.1_mountain_low_angle_up",            6.0, "Low angle power"),
-    ("5_valley_declaration_orbit",           6.0, "Valley emotional intercut"),
-    ("4_oak_street_memory",                  6.0, "Memory of home intercut"),
-    ("1.1_jonkershoek_low_left_angle",       6.0, "Landscape nostalgia"),
+    ("16.1_stoep_over_shoulder_valley",       6.0, "Valley view, emotional"),
+    ("10.1_farmhouse_doorway_inside",        6.0, "Looking out, longing"),
+    ("15_golden_return_approach",             6.0, "Golden light, building"),
     ("6_dj_witkoffie_front_push",            6.0, "DJ enters, energy rises"),
     # --- CHORUS 1 ~1:30 - "Afrikaanse meisie" DJ energy (2 clips ~12s) ---
     ("6.1_dj_witkoffie_high_angle",          6.0, "1:29 CHORUS - DJ above"),
