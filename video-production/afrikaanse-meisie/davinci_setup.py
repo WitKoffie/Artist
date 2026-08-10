@@ -1,18 +1,8 @@
-"""
-Afrikaanse Meisie - WitKoffie | DaVinci Resolve Full Assembly
-=============================================================
-Assesses all clips, clears the timeline, then places every clip
-gaplessly from start to finish, trimmed to exact durations synced
-to the music structure. No holes, no gaps.
-
-Usage:
-  1. Open DaVinci Resolve with 'afrikaner meisie' project
-  2. Workspace > Console > Py3 tab
-  3. exec(open(r"path/to/davinci_setup.py").read())
-"""
+print(">>> SCRIPT LOADED - davinci_setup.py <<<")
 
 import sys
 import os
+import traceback
 
 def get_resolve():
     try:
@@ -635,4 +625,10 @@ def main():
     print()
 
 
-main()
+print(">>> CALLING main() <<<")
+try:
+    main()
+except Exception as e:
+    print(">>> ERROR <<<")
+    traceback.print_exc()
+    print(str(e))
