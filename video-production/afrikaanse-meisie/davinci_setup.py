@@ -121,7 +121,7 @@ BIN_SCENE_MAP = {
 }
 
 # Timeline edit: (scene_name, target_duration_seconds, music_sync_note)
-# Synced to actual WAV analysis timestamps. 41 clips, 283s total (4:43), zero gaps.
+# Synced to actual WAV analysis timestamps. 41 clips, 288s total (4:48), zero gaps.
 #
 # Structure from WAV:
 #   0:00-0:57  Instrumental intro (Stellenbosch landscapes)
@@ -137,7 +137,7 @@ BIN_SCENE_MAP = {
 #   3:45       Absolute peak 47% -> golden return, stoep at peace
 #   4:00       Fading/outro -> walking home
 #   4:19       DJ winding down
-#   4:33       Final orbit + smile -> fade to black
+#   4:33       Final smile, orbit, DJ walks away -> fade to black
 EDIT_LIST = [
     # --- INTRO 0:00-0:57 (57s) - Stellenbosch landscapes, building atmosphere ---
     ("1_jonkershoek_valley_back_to_camera",  10.0, "0:00 Intro - wide valley opens"),
@@ -183,15 +183,15 @@ EDIT_LIST = [
     # --- ABSOLUTE PEAK 3:45-4:00 (15s) - golden profile + at peace ---
     ("15.1_golden_return_right_profile",       6.0, "3:45 PEAK 47% - golden profile"),
     ("16_stoep_at_peace_smile",               9.0, "3:51 At peace, smiling, home"),
-    # --- FADING/OUTRO 4:00-4:33 (33s) - walking home, DJ final ---
-    ("16.1_stoep_over_shoulder_valley",        6.0, "4:00 Over shoulder, valley"),
-    ("17_walking_home_toward",                8.0, "4:06 Walking toward home"),
-    ("17.1_walking_home_left_profile",         5.0, "4:14 Left profile"),
-    ("18_dj_final_dolly_out",                  8.0, "4:19 DJ final dolly out"),
-    ("18.1_dj_final_right_profile",            6.0, "4:27 DJ last look"),
-    # --- FINAL 4:33-4:43 (10s) - orbit + smile -> black ---
-    ("19_final_180_orbit",                     7.0, "4:33 Final 180 orbit"),
-    ("19.1_final_smile_zoom",                  3.0, "4:40 Final smile -> fade to black"),
+    # --- FADING/OUTRO 4:00-4:38 (38s) - walking home, smile, DJ winds down ---
+    ("16.1_stoep_over_shoulder_valley",        8.0, "4:00 Over shoulder, valley"),
+    ("17_walking_home_toward",                10.0, "4:08 Walking toward home"),
+    ("17.1_walking_home_left_profile",         7.0, "4:18 Left profile"),
+    ("18_dj_final_dolly_out",                 10.0, "4:25 DJ final dolly out"),
+    ("19.1_final_smile_zoom",                  3.0, "4:35 Smile, letting go"),
+    # --- FINAL 4:38-4:48 (10s) - orbit + DJ walks away -> black ---
+    ("19_final_180_orbit",                     5.0, "4:38 Final 180 orbit"),
+    ("18.1_dj_final_right_profile",            5.0, "4:43 DJ walks away -> fade to black"),
 ]
 
 SYNC_MARKERS = [
@@ -209,9 +209,11 @@ SYNC_MARKERS = [
     ("00:03:38:00", "Golden return",               "Scene 15 approach"),
     ("00:03:45:00", "ABSOLUTE PEAK 47%",           "Scene 15.1+16 at peace"),
     ("00:04:00:00", "Fading/outro",                "Scene 16.1 valley view"),
-    ("00:04:19:00", "DJ winding down",             "Scene 18 dolly out"),
-    ("00:04:33:00", "Final - near silence",        "Scene 19 orbit+smile"),
-    ("00:04:43:00", "Silence",                     "Fade to black"),
+    ("00:04:25:00", "DJ winding down",             "Scene 18 dolly out"),
+    ("00:04:35:00", "Smile - letting go",          "Scene 19.1 smile"),
+    ("00:04:38:00", "Final orbit",                 "Scene 19 orbit"),
+    ("00:04:43:00", "DJ walks away",               "Scene 18.1 fade to black"),
+    ("00:04:48:00", "Silence",                     "Black"),
 ]
 
 
@@ -513,7 +515,7 @@ def main():
 
     print()
     print(f"[OK] Placed {placed}/{len(EDIT_LIST)} clips on V1")
-    print(f"[OK] Total timeline: {int(running_time//60)}:{int(running_time%60):02d} (target: 4:43)")
+    print(f"[OK] Total timeline: {int(running_time//60)}:{int(running_time%60):02d} (target: 4:48)")
 
     if skipped:
         print()
