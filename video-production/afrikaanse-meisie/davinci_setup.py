@@ -415,34 +415,27 @@ def main():
     print("=" * 70)
     print()
 
-    # ── Create or clear timeline ────────────────────────────────
+    # ── Delete old timeline and create fresh ────────────────────
     mp.SetCurrentFolder(root_folder)
-    timeline = None
+    timelines_to_delete = []
     for i in range(1, project.GetTimelineCount() + 1):
         tl = project.GetTimelineByIndex(i)
         if tl and tl.GetName() == TIMELINE_NAME:
-            timeline = tl
-            break
+            timelines_to_delete.append(tl)
 
-    if timeline:
-        project.SetCurrentTimeline(timeline)
-        # Clear all existing clips
-        for track_type in ["video", "audio"]:
-            for track_idx in range(1, 5):
-                items = timeline.GetItemListInTrack(track_type, track_idx)
-                if items and len(items) > 0:
-                    timeline.DeleteClips(list(items))
-        print(f"[OK] Cleared timeline: {TIMELINE_NAME}")
-    else:
-        timeline = mp.CreateEmptyTimeline(TIMELINE_NAME)
-        if timeline:
-            project.SetCurrentTimeline(timeline)
-            print(f"[OK] Created timeline: {TIMELINE_NAME}")
-        else:
-            print("[ERROR] Could not create timeline")
-            return
+    for tl in timelines_to_delete:
+        mp.DeleteTimelines([tl])
+        print(f"[OK] Deleted old timeline: {TIMELINE_NAME}")
 
-    # ── Place audio on A1 ───────────────────────────────────────
+    timeline = mp.CreateEmptyTimeline(TIMELINE_NAME)
+    if not timeline:
+        print("[ERROR] Could not create timeline")
+        return
+    project.SetCurrentTimeline(timeline)
+    print(f"[OK] Created fresh timeline: {TIMELINE_NAME}")
+    print()
+
+    # ── Place audio FIRST on A1 (WAV = audio-only, no video) ───
     if audio_clip:
         result = mp.AppendToTimeline([{
             "mediaPoolItem": audio_clip,
@@ -452,13 +445,13 @@ def main():
         if result:
             print(f"[OK] Audio on A1: {audio_clip.GetName()}")
         else:
-            print("[WARN] Could not place audio — drag manually to A1")
+            print("[WARN] Could not place audio — drag Afrikaanse Meisie.wav to A1")
     else:
         print("[WARN] No WAV found — import and drag to A1 manually")
     print()
 
-    # ── Place video clips sequentially on V1 ────────────────────
-    print("Placing clips gaplessly on V1...")
+    # ── Place video clips sequentially on V1 (video only) ──────
+    print("Placing clips gaplessly on V1 (video only, no embedded audio)...")
     print()
     placed = 0
     skipped = []
@@ -501,6 +494,15 @@ def main():
         print("[WARN] Skipped clips:")
         for idx, sname, dur in skipped:
             print(f"  #{idx} {sname} ({dur}s) — not found in pool")
+
+    # ── Clean up: delete any embedded audio that landed on A2+ ──
+    print()
+    print("Cleaning up stray audio tracks...")
+    for track_idx in range(2, 6):
+        items = timeline.GetItemListInTrack("audio", track_idx)
+        if items and len(items) > 0:
+            timeline.DeleteClips(list(items))
+            print(f"  [OK] Cleared {len(items)} stray audio clips from A{track_idx}")
     print()
 
     # ── Add sync markers ────────────────────────────────────────
