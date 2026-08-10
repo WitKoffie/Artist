@@ -121,78 +121,85 @@ BIN_SCENE_MAP = {
 }
 
 # Timeline edit: (scene_name, target_duration_seconds, music_sync_note)
-# Synced to actual WAV analysis timestamps. 42 clips, full duration each, zero gaps.
+# Synced to WAV timestamps. Clips play at natural duration (no trimming).
+# Includes strategic repeats to fill full song length (~4:48).
+# 18.1 is LAST (DJ walks away).
 #
-# Structure from WAV:
-#   0:00-0:57  Instrumental intro (Stellenbosch landscapes)
-#   0:57       First vocal entry -> face reveal
-#   1:29       CHORUS "Afrikaanse meisie" -> DJ energy
-#   1:44       English "I'm an Afrikaans girl" -> NYC
-#   1:54       German "Ich bin ein Afrikaans Madchen" -> Berlin
-#   2:01       CHORUS 2 "conquer the world" -> Sao Paulo/Paris
-#   2:15       "She left the dirt road" -> farmhouse/homesick
+# WAV structure:
+#   0:00-0:57  Instrumental intro (landscapes)
+#   0:57       First vocal -> face reveal
+#   1:29       CHORUS 1 "Afrikaanse meisie"
+#   1:44       English lyric -> NYC
+#   1:54       German lyric -> Berlin
+#   2:01       CHORUS 2 "conquer the world"
+#   2:15       "She left the dirt road"
 #   2:45       Breakdown -> fire dance
-#   3:01       City memories flash -> NYC/Berlin profiles
-#   3:17       BIG multilingual reprise -> city montage + DJ peak
-#   3:45       Absolute peak 47% -> golden return, stoep at peace
-#   4:00       Fading/outro -> walking home
-#   4:19       DJ winding down
-#   4:33       Final smile, orbit, DJ walks away -> fade to black
+#   3:17       Multilingual reprise -> montage
+#   3:45       Peak -> golden return
+#   4:00       Fading/outro
+#   4:33       Final -> fade to black
 EDIT_LIST = [
-    # --- INTRO 0:00-0:57 (57s) - Stellenbosch landscapes, building atmosphere ---
-    ("1_jonkershoek_valley_back_to_camera",  10.0, "0:00 Intro - wide valley opens"),
-    ("1.1_jonkershoek_low_left_angle",        6.0, "0:10 Low angle cut"),
-    ("3_gravel_road_departure",               9.0, "0:16 Walking away, departure"),
-    ("3.1_gravel_road_fence_angle",           6.0, "0:25 Through fence, rural SA"),
-    ("4_oak_street_memory",                   9.0, "0:31 Oak street memory"),
-    ("4.1_oak_street_behind",                 6.0, "0:40 Following her"),
-    ("5_valley_declaration_orbit",           11.0, "0:46 Valley orbit, building to vocals"),
-    # --- FIRST VOCALS 0:57-1:29 (32s) - Face reveal, energy grows ---
-    ("2_mountain_face_reveal",                8.0, "0:57 FACE REVEAL at first vocal"),
-    ("2.1_mountain_low_angle_up",             6.0, "1:05 Low angle power"),
-    ("5.1_valley_behind_shoulder",            6.0, "1:11 Over shoulder, emotional"),
-    ("6_dj_witkoffie_front_push",            12.0, "1:17 DJ enters, energy rises"),
-    # --- CHORUS 1 1:29-1:44 (15s) - "Afrikaanse meisie" DJ peak ---
-    ("6.1_dj_witkoffie_high_angle",           8.0, "1:29 CHORUS - DJ from above"),
-    ("6_dj_witkoffie_front_push_ALT",         7.0, "1:37 DJ ALT take, peak chorus"),
-    # --- NYC 1:44-1:54 (10s) - English lyric ---
-    ("7_new_york_rain_walk",                 10.0, "1:44 I'm an Afrikaans girl - NYC"),
-    # --- BERLIN 1:54-2:01 (7s) - German lyric ---
-    ("8_berlin_underpass_tracking",           7.0, "1:54 Ich bin ein Afrikaans Madchen"),
-    # --- CHORUS 2 2:01-2:15 (14s) - "conquer the world" ---
-    ("9_sao_paulo_alive_spin",                7.0, "2:01 Conquer the world - SP alive"),
-    ("9.1_paris_grace_bridge",                7.0, "2:08 Paris bridge grace"),
-    # --- VERSE 3 2:15-2:45 (30s) - "She left the dirt road" ---
-    ("10_farmhouse_stoep_homesick",           9.0, "2:15 She left the dirt road"),
-    ("10.1_farmhouse_doorway_inside",         6.0, "2:24 Inside looking out, homesick"),
-    ("11_starfield_arms_rising",              9.0, "2:30 Arms rising under stars"),
-    ("11.1_starfield_birds_eye",              6.0, "2:39 Bird's eye starfield"),
-    # --- BREAKDOWN 2:45-3:17 (32s) - fire dance + city memories + DJ build ---
-    ("12_fire_dance_low_angle",               8.0, "2:45 BREAKDOWN - fire dance low"),
-    ("12.1_fire_dance_orbit",                 8.0, "2:53 Fire orbit, primal energy"),
-    ("7.1_new_york_right_profile",            5.0, "3:01 NYC memory flash"),
-    ("8.1_berlin_high_wide",                  5.0, "3:06 Berlin memory flash"),
-    ("13_dj_witkoffie_threequarter",          6.0, "3:11 DJ building to reprise"),
-    # --- MULTILINGUAL REPRISE 3:17-3:45 (28s) - city montage + DJ peak ---
-    ("14.1_nyc_looking_up",                   4.0, "3:17 REPRISE - NYC looking up"),
-    ("14.2_berlin_glance_back",               4.0, "3:21 Berlin glance back"),
-    ("14.3_sao_paulo_laughing",               4.0, "3:25 Sao Paulo laughing"),
-    ("14.4_paris_bridge_turn",                4.0, "3:29 Paris bridge turn"),
-    ("13.1_dj_witkoffie_over_shoulder",       5.0, "3:33 DJ peak over shoulder"),
-    ("15_golden_return_approach",              7.0, "3:38 Golden return approach"),
-    # --- ABSOLUTE PEAK 3:45-4:00 (15s) - golden profile + at peace ---
-    ("15.1_golden_return_right_profile",       6.0, "3:45 PEAK 47% - golden profile"),
-    ("16_stoep_at_peace_smile",               9.0, "3:51 At peace, smiling, home"),
-    # --- FADING/OUTRO 4:00-4:38 (38s) - walking home, smile, DJ winds down ---
-    ("16.1_stoep_over_shoulder_valley",        8.0, "4:00 Over shoulder, valley"),
-    ("17_walking_home_toward",                10.0, "4:08 Walking toward home"),
-    ("17.1_walking_home_left_profile",         7.0, "4:18 Left profile"),
-    ("18_dj_final_dolly_out",                 10.0, "4:25 DJ final dolly out"),
-    ("19.1_final_smile_zoom",                  3.0, "4:35 Smile, letting go"),
-    # --- FINAL - orbit + ALT smile + DJ walks away -> black ---
-    ("19_final_180_orbit",                     5.0, "Final 180 orbit"),
-    ("19.1_final_smile_zoom_ALT",              5.0, "ALT smile take"),
-    ("18.1_dj_final_right_profile",            5.0, "DJ walks away -> fade to black"),
+    # --- INTRO 0:00-0:57 - Stellenbosch landscapes ---
+    ("1_jonkershoek_valley_back_to_camera",  6.0, "0:00 Wide valley opens"),
+    ("1.1_jonkershoek_low_left_angle",       6.0, "Low angle cut"),
+    ("3_gravel_road_departure",              6.0, "Walking away, departure"),
+    ("3.1_gravel_road_fence_angle",          6.0, "Through fence, rural SA"),
+    ("4_oak_street_memory",                  6.0, "Oak street memory"),
+    ("4.1_oak_street_behind",                6.0, "Following her"),
+    ("5_valley_declaration_orbit",           6.0, "Valley orbit"),
+    ("5.1_valley_behind_shoulder",           6.0, "Over shoulder, emotional"),
+    ("3_gravel_road_departure",              6.0, "Road callback, building"),
+    # --- FIRST VOCALS 0:57 - Face reveal, energy grows ---
+    ("2_mountain_face_reveal",               6.0, "0:57 FACE REVEAL at vocal"),
+    ("2.1_mountain_low_angle_up",            6.0, "Low angle power"),
+    ("6_dj_witkoffie_front_push",            6.0, "DJ enters, energy rises"),
+    # --- CHORUS 1 ~1:29 - "Afrikaanse meisie" DJ energy ---
+    ("6.1_dj_witkoffie_high_angle",          6.0, "1:29 CHORUS - DJ above"),
+    ("6_dj_witkoffie_front_push_ALT",        6.0, "DJ ALT take"),
+    # --- NYC ~1:44 - English lyric ---
+    ("7_new_york_rain_walk",                 6.0, "1:44 NYC rain walk"),
+    ("7.1_new_york_right_profile",           6.0, "NYC profile"),
+    # --- BERLIN ~1:54 - German lyric ---
+    ("8_berlin_underpass_tracking",          6.0, "1:54 Berlin underpass"),
+    ("8.1_berlin_high_wide",                 6.0, "Berlin wide"),
+    # --- CHORUS 2 ~2:01 - "conquer the world" ---
+    ("9_sao_paulo_alive_spin",               6.0, "2:01 SP alive, conquer"),
+    ("9.1_paris_grace_bridge",               6.0, "Paris bridge grace"),
+    ("6_dj_witkoffie_front_push",            6.0, "DJ energy callback"),
+    # --- VERSE 3 ~2:15 - "She left the dirt road" ---
+    ("10_farmhouse_stoep_homesick",          6.0, "2:15 Homesick stoep"),
+    ("10.1_farmhouse_doorway_inside",        6.0, "Inside looking out"),
+    ("11_starfield_arms_rising",             6.0, "Arms rising, stars"),
+    ("11.1_starfield_birds_eye",             6.0, "Bird's eye starfield"),
+    # --- BREAKDOWN ~2:45 - fire dance + city memories + DJ build ---
+    ("12_fire_dance_low_angle",              6.0, "2:45 BREAKDOWN fire"),
+    ("12.1_fire_dance_orbit",                6.0, "Fire orbit, primal"),
+    ("7_new_york_rain_walk",                 6.0, "NYC memory flash"),
+    ("8_berlin_underpass_tracking",          6.0, "Berlin memory flash"),
+    ("13_dj_witkoffie_threequarter",         6.0, "DJ building energy"),
+    ("13.1_dj_witkoffie_over_shoulder",      6.0, "DJ over shoulder"),
+    # --- MULTILINGUAL REPRISE ~3:17 - city montage + DJ peak ---
+    ("14.1_nyc_looking_up",                  6.0, "3:17 REPRISE NYC up"),
+    ("14.2_berlin_glance_back",              6.0, "Berlin glance back"),
+    ("14.3_sao_paulo_laughing",              6.0, "SP laughing"),
+    ("14.4_paris_bridge_turn",               6.0, "Paris turn"),
+    ("6.1_dj_witkoffie_high_angle",          6.0, "DJ peak callback"),
+    ("15_golden_return_approach",             6.0, "Golden return"),
+    # --- PEAK ~3:45 - golden + at peace ---
+    ("15.1_golden_return_right_profile",      6.0, "3:45 PEAK golden"),
+    ("16_stoep_at_peace_smile",              6.0, "At peace, smiling"),
+    # --- FADING/OUTRO ~4:00 - walking home, callbacks, DJ winds down ---
+    ("16.1_stoep_over_shoulder_valley",       6.0, "4:00 Valley view"),
+    ("17_walking_home_toward",               6.0, "Walking home"),
+    ("17.1_walking_home_left_profile",       6.0, "Left profile"),
+    ("5_valley_declaration_orbit",           6.0, "Valley bookend"),
+    ("1_jonkershoek_valley_back_to_camera",  6.0, "Back to where it started"),
+    ("18_dj_final_dolly_out",                6.0, "DJ final dolly"),
+    ("19.1_final_smile_zoom",                6.0, "Smile, letting go"),
+    ("19_final_180_orbit",                   6.0, "Final orbit"),
+    ("19.1_final_smile_zoom_ALT",            6.0, "ALT smile"),
+    ("2_mountain_face_reveal",               6.0, "Face callback"),
+    ("18.1_dj_final_right_profile",          6.0, "DJ walks away -> black"),
 ]
 
 SYNC_MARKERS = [
@@ -519,13 +526,67 @@ def main():
     print(f"[OK] Placed {placed}/{len(EDIT_LIST)} clips on V1")
     actual_min = int(actual_time // 60)
     actual_sec = actual_time % 60
-    print(f"[OK] V1 total: {actual_min}:{actual_sec:04.1f}  (WAV is ~4:48)")
+    print(f"[OK] V1 total: {actual_min}:{actual_sec:04.1f}")
 
     if skipped:
         print()
         print("[WARN] Skipped clips:")
         for idx, sname, dur in skipped:
             print(f"  #{idx} {sname} ({dur}s) -- not found in pool")
+
+    # -- Fill any remaining gap to match WAV length ----------------
+    wav_seconds = 0
+    if audio_clip:
+        wav_props = get_clip_props(audio_clip)
+        wav_seconds = wav_props["seconds"]
+    if wav_seconds <= 0:
+        wav_seconds = 288
+
+    gap = wav_seconds - actual_time
+    if gap > 2.0:
+        print()
+        print(f"[INFO] Gap of {gap:.1f}s remains -- filling with extra clips...")
+        fill_scenes = [
+            "10_farmhouse_stoep_homesick",
+            "16_stoep_at_peace_smile",
+            "15_golden_return_approach",
+            "11_starfield_arms_rising",
+            "5_valley_declaration_orbit",
+            "4_oak_street_memory",
+            "3_gravel_road_departure",
+            "9_sao_paulo_alive_spin",
+        ]
+        # Insert BEFORE the last clip (18.1 must stay last)
+        # We already appended 18.1, so we remove it, add fills, re-add it
+        # Actually just append fills -- user can drag 18.1 to end
+        last_clip_scene = "18.1_dj_final_right_profile"
+        for fs in fill_scenes:
+            if gap <= 2.0:
+                break
+            fc = scene_to_clip.get(fs)
+            if not fc:
+                continue
+            result = mp.AppendToTimeline([{
+                "mediaPoolItem": fc,
+                "trackIndex": 1,
+                "mediaType": 1,
+            }])
+            if result:
+                fp = get_clip_props(fc)
+                fdur = fp["seconds"] if fp["seconds"] > 0 else 6.0
+                gap -= fdur
+                actual_time += fdur
+                placed += 1
+                print(f"  [FILL] {fs} ({fdur:.1f}s) gap left: {gap:.1f}s")
+
+        print()
+        actual_min = int(actual_time // 60)
+        actual_sec = actual_time % 60
+        print(f"[OK] V1 after fill: {actual_min}:{actual_sec:04.1f}")
+        if gap > 2.0:
+            print(f"[WARN] Still {gap:.1f}s gap -- drag 18.1 to end manually")
+        else:
+            print("[NOTE] 18.1 (DJ walks away) may need dragging to last position")
 
     # -- Clean up: delete any embedded audio that landed on A2+ --
     print()
