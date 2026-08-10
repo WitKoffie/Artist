@@ -139,7 +139,7 @@ BIN_SCENE_MAP = {
 #   4:00       Fading/outro
 #   4:33       Final -> fade to black
 EDIT_LIST = [
-    # --- INTRO 0:00-0:57 - Stellenbosch landscapes ---
+    # --- INTRO 0:00-0:57 - Stellenbosch landscapes (9 clips ~54s) ---
     ("1_jonkershoek_valley_back_to_camera",  6.0, "0:00 Wide valley opens"),
     ("1.1_jonkershoek_low_left_angle",       6.0, "Low angle cut"),
     ("3_gravel_road_departure",              6.0, "Walking away, departure"),
@@ -148,47 +148,51 @@ EDIT_LIST = [
     ("4.1_oak_street_behind",                6.0, "Following her"),
     ("5_valley_declaration_orbit",           6.0, "Valley orbit"),
     ("5.1_valley_behind_shoulder",           6.0, "Over shoulder, emotional"),
-    ("3_gravel_road_departure",              6.0, "Road callback, building"),
-    # --- FIRST VOCALS 0:57 - Face reveal, energy grows ---
+    ("3_gravel_road_departure",              6.0, "Building to vocals"),
+    # --- FIRST VOCALS 0:57 - Face reveal, energy grows (6 clips ~36s) ---
+    # Added landscape intercuts so vocals section fills properly
     ("2_mountain_face_reveal",               6.0, "0:57 FACE REVEAL at vocal"),
     ("2.1_mountain_low_angle_up",            6.0, "Low angle power"),
+    ("5_valley_declaration_orbit",           6.0, "Valley emotional intercut"),
+    ("4_oak_street_memory",                  6.0, "Memory of home intercut"),
+    ("1.1_jonkershoek_low_left_angle",       6.0, "Landscape nostalgia"),
     ("6_dj_witkoffie_front_push",            6.0, "DJ enters, energy rises"),
-    # --- CHORUS 1 ~1:29 - "Afrikaanse meisie" DJ energy ---
+    # --- CHORUS 1 ~1:30 - "Afrikaanse meisie" DJ energy (2 clips ~12s) ---
     ("6.1_dj_witkoffie_high_angle",          6.0, "1:29 CHORUS - DJ above"),
     ("6_dj_witkoffie_front_push_ALT",        6.0, "DJ ALT take"),
-    # --- NYC ~1:44 - English lyric ---
+    # --- NYC ~1:42 - English lyric (2 clips ~12s) ---
     ("7_new_york_rain_walk",                 6.0, "1:44 NYC rain walk"),
-    ("7.1_new_york_right_profile",           6.0, "NYC profile"),
-    # --- BERLIN ~1:54 - German lyric ---
+    ("14.1_nyc_looking_up",                  6.0, "NYC looking up at buildings"),
+    # --- BERLIN ~1:54 - German lyric (1 clip ~6s) ---
     ("8_berlin_underpass_tracking",          6.0, "1:54 Berlin underpass"),
-    ("8.1_berlin_high_wide",                 6.0, "Berlin wide"),
-    # --- CHORUS 2 ~2:01 - "conquer the world" ---
+    # --- CHORUS 2 ~2:00 - "conquer the world" (3 clips ~18s) ---
     ("9_sao_paulo_alive_spin",               6.0, "2:01 SP alive, conquer"),
     ("9.1_paris_grace_bridge",               6.0, "Paris bridge grace"),
-    ("6_dj_witkoffie_front_push",            6.0, "DJ energy callback"),
-    # --- VERSE 3 ~2:15 - "She left the dirt road" ---
+    ("6_dj_witkoffie_front_push",            6.0, "DJ energy bridge"),
+    # --- VERSE 3 ~2:18 - "She left the dirt road" (5 clips ~30s) ---
     ("10_farmhouse_stoep_homesick",          6.0, "2:15 Homesick stoep"),
     ("10.1_farmhouse_doorway_inside",        6.0, "Inside looking out"),
     ("11_starfield_arms_rising",             6.0, "Arms rising, stars"),
     ("11.1_starfield_birds_eye",             6.0, "Bird's eye starfield"),
-    # --- BREAKDOWN ~2:45 - fire dance + city memories + DJ build ---
+    ("10_farmhouse_stoep_homesick",          6.0, "Homesick callback"),
+    # --- BREAKDOWN ~2:48 - fire dance + memories + DJ build (6 clips ~36s) ---
     ("12_fire_dance_low_angle",              6.0, "2:45 BREAKDOWN fire"),
     ("12.1_fire_dance_orbit",                6.0, "Fire orbit, primal"),
     ("7_new_york_rain_walk",                 6.0, "NYC memory flash"),
     ("8_berlin_underpass_tracking",          6.0, "Berlin memory flash"),
     ("13_dj_witkoffie_threequarter",         6.0, "DJ building energy"),
     ("13.1_dj_witkoffie_over_shoulder",      6.0, "DJ over shoulder"),
-    # --- MULTILINGUAL REPRISE ~3:17 - city montage + DJ peak ---
+    # --- REPRISE ~3:24 - city montage + DJ peak (6 clips ~36s) ---
     ("14.1_nyc_looking_up",                  6.0, "3:17 REPRISE NYC up"),
     ("14.2_berlin_glance_back",              6.0, "Berlin glance back"),
     ("14.3_sao_paulo_laughing",              6.0, "SP laughing"),
     ("14.4_paris_bridge_turn",               6.0, "Paris turn"),
     ("6.1_dj_witkoffie_high_angle",          6.0, "DJ peak callback"),
     ("15_golden_return_approach",             6.0, "Golden return"),
-    # --- PEAK ~3:45 - golden + at peace ---
+    # --- PEAK ~4:00 - golden + at peace (2 clips ~12s) ---
     ("15.1_golden_return_right_profile",      6.0, "3:45 PEAK golden"),
     ("16_stoep_at_peace_smile",              6.0, "At peace, smiling"),
-    # --- FADING/OUTRO ~4:00 - walking home, callbacks, DJ winds down ---
+    # --- FADING/OUTRO ~4:12 - walking home, callbacks (7 clips ~42s) ---
     ("16.1_stoep_over_shoulder_valley",       6.0, "4:00 Valley view"),
     ("17_walking_home_toward",               6.0, "Walking home"),
     ("17.1_walking_home_left_profile",       6.0, "Left profile"),
@@ -196,9 +200,9 @@ EDIT_LIST = [
     ("1_jonkershoek_valley_back_to_camera",  6.0, "Back to where it started"),
     ("18_dj_final_dolly_out",                6.0, "DJ final dolly"),
     ("19.1_final_smile_zoom",                6.0, "Smile, letting go"),
+    # --- FINAL - orbit + smile + DJ walks away (3 clips ~18s) ---
     ("19_final_180_orbit",                   6.0, "Final orbit"),
     ("19.1_final_smile_zoom_ALT",            6.0, "ALT smile"),
-    ("2_mountain_face_reveal",               6.0, "Face callback"),
     ("18.1_dj_final_right_profile",          6.0, "DJ walks away -> black"),
 ]
 
