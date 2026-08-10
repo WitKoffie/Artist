@@ -121,7 +121,7 @@ BIN_SCENE_MAP = {
 }
 
 # Timeline edit: (scene_name, target_duration_seconds, music_sync_note)
-# Synced to actual WAV analysis timestamps. 41 clips, 288s total (4:48), zero gaps.
+# Synced to actual WAV analysis timestamps. 42 clips, full duration each, zero gaps.
 #
 # Structure from WAV:
 #   0:00-0:57  Instrumental intro (Stellenbosch landscapes)
@@ -189,9 +189,10 @@ EDIT_LIST = [
     ("17.1_walking_home_left_profile",         7.0, "4:18 Left profile"),
     ("18_dj_final_dolly_out",                 10.0, "4:25 DJ final dolly out"),
     ("19.1_final_smile_zoom",                  3.0, "4:35 Smile, letting go"),
-    # --- FINAL 4:38-4:48 (10s) - orbit + DJ walks away -> black ---
-    ("19_final_180_orbit",                     5.0, "4:38 Final 180 orbit"),
-    ("18.1_dj_final_right_profile",            5.0, "4:43 DJ walks away -> fade to black"),
+    # --- FINAL - orbit + ALT smile + DJ walks away -> black ---
+    ("19_final_180_orbit",                     5.0, "Final 180 orbit"),
+    ("19.1_final_smile_zoom_ALT",              5.0, "ALT smile take"),
+    ("18.1_dj_final_right_profile",            5.0, "DJ walks away -> fade to black"),
 ]
 
 SYNC_MARKERS = [
@@ -479,43 +480,46 @@ def main():
     print()
 
     # -- Place video clips sequentially on V1 (video only) ------
-    print("Placing clips gaplessly on V1 (video only, no embedded audio)...")
+    # Use full clip duration (no endFrame trimming) so every frame of
+    # footage fills the timeline. Clips play at their natural length.
+    print("Placing clips gaplessly on V1 (full duration, no trimming)...")
     print()
     placed = 0
     skipped = []
-    running_time = 0.0
+    actual_time = 0.0
 
     for i, (scene_name, target_dur, note) in enumerate(EDIT_LIST, 1):
         pool_clip = scene_to_clip.get(scene_name)
 
         if not pool_clip:
             skipped.append((i, scene_name, target_dur))
-            running_time += target_dur
             continue
 
-        target_frames = int(round(target_dur * FPS))
+        props = get_clip_props(pool_clip)
+        clip_seconds = props["seconds"]
 
         clip_info = {
             "mediaPoolItem": pool_clip,
             "trackIndex": 1,
             "mediaType": 1,
-            "endFrame": target_frames,
         }
 
         result = mp.AppendToTimeline([clip_info])
         if result:
             placed += 1
-            tc_min = int(running_time // 60)
-            tc_sec = running_time % 60
-            print(f"  [{placed:02d}] {tc_min}:{tc_sec:05.2f}  {scene_name}  ({target_dur}s)  {note}")
+            tc_min = int(actual_time // 60)
+            tc_sec = actual_time % 60
+            dur_label = f"{clip_seconds:.1f}s" if clip_seconds > 0 else "?s"
+            print(f"  [{placed:02d}] {tc_min}:{tc_sec:05.2f}  {scene_name}  ({dur_label})  {note}")
+            actual_time += clip_seconds if clip_seconds > 0 else target_dur
         else:
             skipped.append((i, scene_name, target_dur))
 
-        running_time += target_dur
-
     print()
     print(f"[OK] Placed {placed}/{len(EDIT_LIST)} clips on V1")
-    print(f"[OK] Total timeline: {int(running_time//60)}:{int(running_time%60):02d} (target: 4:48)")
+    actual_min = int(actual_time // 60)
+    actual_sec = actual_time % 60
+    print(f"[OK] V1 total: {actual_min}:{actual_sec:04.1f}  (WAV is ~4:48)")
 
     if skipped:
         print()
@@ -552,7 +556,8 @@ def main():
     print()
     print("  Timeline structure:")
     print("  A1: Afrikaanse Meisie.wav (full song)")
-    print(f"  V1: {placed} clips, back-to-back, 0:00 to 4:43")
+    print(f"  V1: {placed} clips, back-to-back, full duration each")
+    print(f"  V1 total: {actual_min}:{actual_sec:04.1f}")
     print()
     print("  Next steps:")
     print("  1. LOCK A1 (click padlock on audio track)")
