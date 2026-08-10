@@ -121,70 +121,96 @@ BIN_SCENE_MAP = {
 }
 
 # Timeline edit: (scene_name, target_duration_seconds, music_sync_note)
-# Durations calculated so every clip butts up perfectly = 4:43 total, zero gaps
+# Synced to actual WAV analysis timestamps. 41 clips, 283s total (4:43), zero gaps.
+#
+# Structure from WAV:
+#   0:00-0:57  Instrumental intro (Stellenbosch landscapes)
+#   0:57       First vocal entry -> face reveal
+#   1:29       CHORUS "Afrikaanse meisie" -> DJ energy
+#   1:44       English "I'm an Afrikaans girl" -> NYC
+#   1:54       German "Ich bin ein Afrikaans Madchen" -> Berlin
+#   2:01       CHORUS 2 "conquer the world" -> Sao Paulo/Paris
+#   2:15       "She left the dirt road" -> farmhouse/homesick
+#   2:45       Breakdown -> fire dance
+#   3:01       City memories flash -> NYC/Berlin profiles
+#   3:17       BIG multilingual reprise -> city montage + DJ peak
+#   3:45       Absolute peak 47% -> golden return, stoep at peace
+#   4:00       Fading/outro -> walking home
+#   4:19       DJ winding down
+#   4:33       Final orbit + smile -> fade to black
 EDIT_LIST = [
-    ("1_jonkershoek_valley_back_to_camera",  10.0, "Intro pad/atmosphere"),
-    ("1.1_jonkershoek_low_left_angle",        5.0, "Angle cut"),
-    ("2_mountain_face_reveal",               10.0, "Kick enters - face reveal"),
-    ("2.1_mountain_low_angle_up",             5.0, "Low angle"),
-    ("3_gravel_road_departure",              10.0, "Groove locks - she walks"),
-    ("3.1_gravel_road_fence_angle",           5.0, "Through fence"),
-    ("4_oak_street_memory",                  10.0, "Sy's gebore in Stellenbosch"),
-    ("4.1_oak_street_behind",                 5.0, "Behind her"),
-    ("5_valley_declaration_orbit",           10.0, "CHORUS: Afrikaanse meisie"),
-    ("5.1_valley_behind_shoulder",            5.0, "Over shoulder"),
-    ("6_dj_witkoffie_front_push",            10.0, "Elke stad ken haar gesig"),
-    ("6.1_dj_witkoffie_high_angle",           5.0, "DJ high angle"),
-    ("7_new_york_rain_walk",                 10.0, "English lyric - NYC"),
-    ("7.1_new_york_right_profile",            5.0, "NYC profile"),
-    ("8_berlin_underpass_tracking",          10.0, "German lyric - Berlin"),
-    ("8.1_berlin_high_wide",                  5.0, "Berlin above"),
-    ("9_sao_paulo_alive_spin",                7.0, "Jy gaan die wereld verower"),
-    ("9.1_paris_grace_bridge",                8.0, "Paris bridge grace"),
-    ("10_farmhouse_stoep_homesick",          10.0, "Sy't die stofpad verlaat"),
-    ("10.1_farmhouse_doorway_inside",         5.0, "Inside looking out"),
-    ("11_starfield_arms_rising",             10.0, "Jy hoef nie bly nie"),
-    ("11.1_starfield_birds_eye",              5.0, "Bird's eye"),
-    ("12_fire_dance_low_angle",               5.0, "Sy dans met vuur"),
-    ("12.1_fire_dance_orbit",                10.0, "Dance orbit fire"),
-    ("13_dj_witkoffie_threequarter",         10.0, "Multilingual reprise - DJ peak"),
-    ("13.1_dj_witkoffie_over_shoulder",       5.0, "DJ over shoulder"),
-    ("14.1_nyc_looking_up",                   3.5, "MONTAGE: cities fading"),
-    ("14.2_berlin_glance_back",               3.5, "Montage Berlin"),
-    ("14.3_sao_paulo_laughing",               3.5, "Montage Sao Paulo"),
-    ("14.4_paris_bridge_turn",                4.5, "Montage Paris -> hold"),
-    ("15_golden_return_approach",            10.0, "Instrumental peak - golden return"),
-    ("15.1_golden_return_right_profile",      5.0, "Profile golden hour"),
-    ("16_stoep_at_peace_smile",              10.0, "Elements strip - at peace"),
-    ("16.1_stoep_over_shoulder_valley",       5.0, "Over shoulder valley"),
-    ("17_walking_home_toward",               10.0, "Outro fading - walking home"),
-    ("17.1_walking_home_left_profile",        5.0, "Left profile"),
-    ("18_dj_final_dolly_out",                10.0, "Minimal - DJ final"),
-    ("18.1_dj_final_right_profile",           5.0, "DJ right side"),
-    ("19_final_180_orbit",                   10.0, "Near silence - orbit"),
-    ("19.1_final_smile_zoom",                 3.0, "Smile -> fade to black"),
+    # --- INTRO 0:00-0:57 (57s) - Stellenbosch landscapes, building atmosphere ---
+    ("1_jonkershoek_valley_back_to_camera",  10.0, "0:00 Intro - wide valley opens"),
+    ("1.1_jonkershoek_low_left_angle",        6.0, "0:10 Low angle cut"),
+    ("3_gravel_road_departure",               9.0, "0:16 Walking away, departure"),
+    ("3.1_gravel_road_fence_angle",           6.0, "0:25 Through fence, rural SA"),
+    ("4_oak_street_memory",                   9.0, "0:31 Oak street memory"),
+    ("4.1_oak_street_behind",                 6.0, "0:40 Following her"),
+    ("5_valley_declaration_orbit",           11.0, "0:46 Valley orbit, building to vocals"),
+    # --- FIRST VOCALS 0:57-1:29 (32s) - Face reveal, energy grows ---
+    ("2_mountain_face_reveal",                8.0, "0:57 FACE REVEAL at first vocal"),
+    ("2.1_mountain_low_angle_up",             6.0, "1:05 Low angle power"),
+    ("5.1_valley_behind_shoulder",            6.0, "1:11 Over shoulder, emotional"),
+    ("6_dj_witkoffie_front_push",            12.0, "1:17 DJ enters, energy rises"),
+    # --- CHORUS 1 1:29-1:44 (15s) - "Afrikaanse meisie" DJ peak ---
+    ("6.1_dj_witkoffie_high_angle",           8.0, "1:29 CHORUS - DJ from above"),
+    ("6_dj_witkoffie_front_push_ALT",         7.0, "1:37 DJ ALT take, peak chorus"),
+    # --- NYC 1:44-1:54 (10s) - English lyric ---
+    ("7_new_york_rain_walk",                 10.0, "1:44 I'm an Afrikaans girl - NYC"),
+    # --- BERLIN 1:54-2:01 (7s) - German lyric ---
+    ("8_berlin_underpass_tracking",           7.0, "1:54 Ich bin ein Afrikaans Madchen"),
+    # --- CHORUS 2 2:01-2:15 (14s) - "conquer the world" ---
+    ("9_sao_paulo_alive_spin",                7.0, "2:01 Conquer the world - SP alive"),
+    ("9.1_paris_grace_bridge",                7.0, "2:08 Paris bridge grace"),
+    # --- VERSE 3 2:15-2:45 (30s) - "She left the dirt road" ---
+    ("10_farmhouse_stoep_homesick",           9.0, "2:15 She left the dirt road"),
+    ("10.1_farmhouse_doorway_inside",         6.0, "2:24 Inside looking out, homesick"),
+    ("11_starfield_arms_rising",              9.0, "2:30 Arms rising under stars"),
+    ("11.1_starfield_birds_eye",              6.0, "2:39 Bird's eye starfield"),
+    # --- BREAKDOWN 2:45-3:17 (32s) - fire dance + city memories + DJ build ---
+    ("12_fire_dance_low_angle",               8.0, "2:45 BREAKDOWN - fire dance low"),
+    ("12.1_fire_dance_orbit",                 8.0, "2:53 Fire orbit, primal energy"),
+    ("7.1_new_york_right_profile",            5.0, "3:01 NYC memory flash"),
+    ("8.1_berlin_high_wide",                  5.0, "3:06 Berlin memory flash"),
+    ("13_dj_witkoffie_threequarter",          6.0, "3:11 DJ building to reprise"),
+    # --- MULTILINGUAL REPRISE 3:17-3:45 (28s) - city montage + DJ peak ---
+    ("14.1_nyc_looking_up",                   4.0, "3:17 REPRISE - NYC looking up"),
+    ("14.2_berlin_glance_back",               4.0, "3:21 Berlin glance back"),
+    ("14.3_sao_paulo_laughing",               4.0, "3:25 Sao Paulo laughing"),
+    ("14.4_paris_bridge_turn",                4.0, "3:29 Paris bridge turn"),
+    ("13.1_dj_witkoffie_over_shoulder",       5.0, "3:33 DJ peak over shoulder"),
+    ("15_golden_return_approach",              7.0, "3:38 Golden return approach"),
+    # --- ABSOLUTE PEAK 3:45-4:00 (15s) - golden profile + at peace ---
+    ("15.1_golden_return_right_profile",       6.0, "3:45 PEAK 47% - golden profile"),
+    ("16_stoep_at_peace_smile",               9.0, "3:51 At peace, smiling, home"),
+    # --- FADING/OUTRO 4:00-4:33 (33s) - walking home, DJ final ---
+    ("16.1_stoep_over_shoulder_valley",        6.0, "4:00 Over shoulder, valley"),
+    ("17_walking_home_toward",                8.0, "4:06 Walking toward home"),
+    ("17.1_walking_home_left_profile",         5.0, "4:14 Left profile"),
+    ("18_dj_final_dolly_out",                  8.0, "4:19 DJ final dolly out"),
+    ("18.1_dj_final_right_profile",            6.0, "4:27 DJ last look"),
+    # --- FINAL 4:33-4:43 (10s) - orbit + smile -> black ---
+    ("19_final_180_orbit",                     7.0, "4:33 Final 180 orbit"),
+    ("19.1_final_smile_zoom",                  3.0, "4:40 Final smile -> fade to black"),
 ]
 
 SYNC_MARKERS = [
-    ("00:00:00:00", "First pad/atmosphere",        "Scene 1 opens"),
-    ("00:00:15:00", "Kick enters",                 "Scene 2 face reveal"),
-    ("00:00:30:00", "Groove locks",                "Scene 3 she walks"),
-    ("00:00:45:00", "Sy's gebore in Stellenbosch", "Scene 4 oak street"),
-    ("00:01:00:00", "Afrikaanse meisie chorus",    "Scene 5 declaration"),
-    ("00:01:15:00", "Elke stad ken haar gesig",    "Scene 6 DJ enters"),
-    ("00:01:30:00", "English lyric NYC",           "Scene 7 Times Square"),
-    ("00:01:45:00", "German lyric Berlin",         "Scene 8 underpass"),
-    ("00:02:00:00", "Jy gaan die wereld verower",  "Scene 9 SP+Paris"),
-    ("00:02:15:00", "Sy't die stofpad verlaat",    "Scene 10 homesick"),
-    ("00:02:30:00", "Jy hoef nie bly nie",         "Scene 11 starfield"),
-    ("00:02:45:00", "Sy dans met vuur",            "Scene 12 DANCE"),
-    ("00:03:00:00", "Multilingual reprise",        "Scene 13 DJ peak"),
-    ("00:03:15:00", "Cities fading",               "Scene 14 montage"),
-    ("00:03:30:00", "Instrumental peak",           "Scene 15 golden return"),
-    ("00:03:45:00", "Elements strip",              "Scene 16 at peace"),
-    ("00:04:00:00", "Outro fading",                "Scene 17 walking home"),
-    ("00:04:15:00", "Minimal",                     "Scene 18 DJ final"),
-    ("00:04:30:00", "Near silence",                "Scene 19 orbit+smile"),
+    ("00:00:00:00", "Intro - atmosphere",          "Scene 1 valley opens"),
+    ("00:00:57:00", "First vocals enter",          "Scene 2 FACE REVEAL"),
+    ("00:01:17:00", "DJ enters",                   "Scene 6 DJ front push"),
+    ("00:01:29:00", "CHORUS: Afrikaanse meisie",   "Scene 6.1 DJ high angle"),
+    ("00:01:44:00", "English: Afrikaans girl",     "Scene 7 NYC rain walk"),
+    ("00:01:54:00", "German: Afrikaans Madchen",   "Scene 8 Berlin underpass"),
+    ("00:02:01:00", "CHORUS 2: conquer the world", "Scene 9 Sao Paulo"),
+    ("00:02:15:00", "She left the dirt road",      "Scene 10 farmhouse"),
+    ("00:02:45:00", "BREAKDOWN - fire dance",      "Scene 12 fire low angle"),
+    ("00:03:01:00", "City memories flash",         "Scenes 7.1+8.1 profiles"),
+    ("00:03:17:00", "MULTILINGUAL REPRISE",        "Scene 14 city montage"),
+    ("00:03:38:00", "Golden return",               "Scene 15 approach"),
+    ("00:03:45:00", "ABSOLUTE PEAK 47%",           "Scene 15.1+16 at peace"),
+    ("00:04:00:00", "Fading/outro",                "Scene 16.1 valley view"),
+    ("00:04:19:00", "DJ winding down",             "Scene 18 dolly out"),
+    ("00:04:33:00", "Final - near silence",        "Scene 19 orbit+smile"),
     ("00:04:43:00", "Silence",                     "Fade to black"),
 ]
 
