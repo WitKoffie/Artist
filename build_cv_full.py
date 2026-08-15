@@ -272,15 +272,15 @@ def build_cv():
     y -= 1
 
     p1 = "Enterprise architect and digital transformation leader with extensive progressive experience spanning solution architecture, business analysis, project management, and technical delivery across government, defence, healthcare, telecommunications, and media sectors. Currently serving as Senior Solutions Architect at the Office of Gas and Electricity Markets (Ofgem), the UK's independent energy regulator, where I design and assure scalable, secure digital infrastructure supporting critical energy systems serving 3M+ direct platform users across 28M+ households."
-    y = draw_text_block(c, ML, y, p1, "InstrumentSans", 6.5, GRAPHITE, CW, 8.5)
+    y = draw_text_block(c, ML, y, p1, "InstrumentSans", 7.5, GRAPHITE, CW, 10)
     y -= 1
 
     p2 = "Architect of record on 18 projects since 2021, spanning end-to-end solution design, enterprise data platform strategy, AI-enabled tooling, inter-departmental secure file transfer, and business continuity digitisation. Published researcher with peer-accessible papers on energy-sector enterprise architecture, human rights documentation infrastructure, and comparative regulatory analysis. IEEE Senior Member. MBA-qualified with deep expertise in TOGAF, ArchiMate, Microsoft Azure, GDS Standards, and UK Government security frameworks."
-    y = draw_text_block(c, ML, y, p2, "InstrumentSans", 6.5, GRAPHITE, CW, 8.5)
+    y = draw_text_block(c, ML, y, p2, "InstrumentSans", 7.5, GRAPHITE, CW, 10)
     y -= 1
 
     p3 = "Strengths include translating complex business requirements into practical, assured solution architectures; bridging technical detail with strategic intent for senior stakeholders; and maintaining architectural coherence across multi-project portfolios. People-oriented leader who values collaborative, respectful working environments."
-    y = draw_text_block(c, ML, y, p3, "InstrumentSans", 6.5, GRAPHITE, CW, 8.5)
+    y = draw_text_block(c, ML, y, p3, "InstrumentSans", 7.5, GRAPHITE, CW, 10)
 
     y -= 5
     y = draw_metric_strip(c, y)
@@ -308,8 +308,8 @@ def build_cv():
     y -= 8
 
     y = draw_text_block(c, ML, y, "Ofgem is the United Kingdom's independent energy regulator responsible for gas and electricity markets. I serve as technical architect within the DDSS division, accountable for solution architecture design, technical governance, and stakeholder engagement across the organisation.",
-                       "InstrumentSans", 6, GRAPHITE, CW, 7.8)
-    y -= 2
+                       "InstrumentSans", 7.2, GRAPHITE, CW, 9.5)
+    y -= 3
 
     responsibilities = [
         "Solution architecture design, documentation, and peer review on assigned projects (30% of role)",
@@ -319,9 +319,9 @@ def build_cv():
     ]
 
     for resp in responsibilities:
-        y = draw_bullet(c, ML, y, resp, "InstrumentSans", 5.5, GRAPHITE, CW, 7)
+        y = draw_bullet(c, ML, y, resp, "InstrumentSans", 6.8, GRAPHITE, CW, 8.8)
 
-    y -= 4 * mm
+    y -= 6 * mm
     y = section_header(c, ML, y, "KEY SOLUTION ARCHITECTURE PROJECTS (2024–2026)", CW)
     y -= 1
 
@@ -334,11 +334,17 @@ def build_cv():
 
         ("Enable Power BI Publish to Web", "Sep 2025–Mar 2026", "Architecture/Assurance Contributor",
          "Participated in security, privacy, and operational-readiness review for establishing a governed process for publicly publishing selected Power BI reports. GO decision recorded at go-live review on 12 March 2026."),
+
+        ("AI-Driven Social Listening Tool", "Feb–Jul 2025", "Solution Architect",
+         "Delivered solution architecture, architecture content for TDA, governance and security coordination, and technical feasibility assessment for an AI-powered monitoring and sentiment analysis tool for energy-sector consumer insight. Concept approved at TDA288; supplier onboarding and further design work identified."),
+
+        ("8x8 and Crezovi Integration", "May–Jun 2025", "Solution Architect/Assurance Contributor",
+         "Managed supplier technical questions covering data-flow, identity, security, retention, cost, and exit considerations for telephony platform integration. Facilitated Vanta Trust Center assurance access for supplier due diligence."),
     ]
 
     for title, dates, role, desc in sa_projects_p1:
-        y = draw_project_entry(c, y, title, dates, role, desc, 6.5, 8.5)
-        y -= 3
+        y = draw_project_entry(c, y, title, dates, role, desc, 8.8, 12.2)
+        y -= 10
 
     c.showPage()
 
@@ -352,12 +358,6 @@ def build_cv():
     y -= 2
 
     sa_projects_p2 = [
-        ("AI-Driven Social Listening Tool", "Feb–Jul 2025", "Solution Architect",
-         "Delivered solution architecture, architecture content for TDA, governance and security coordination, and technical feasibility assessment for an AI-powered monitoring and sentiment analysis tool for energy-sector consumer insight. Concept approved at TDA288; supplier onboarding and further design work identified."),
-
-        ("8x8 and Crezovi Integration", "May–Jun 2025", "Solution Architect/Assurance Contributor",
-         "Managed supplier technical questions covering data-flow, identity, security, retention, cost, and exit considerations for telephony platform integration. Facilitated Vanta Trust Center assurance access for supplier due diligence."),
-
         ("DWP-Ofgem Secure File Transfer / SFTE", "Jun 2024–Jul 2025", "Solution Architecture & Technical Coordination",
          "Designed options and security assessment, storage-account design notes, testing coordination, and network whitelist information for secure bi-directional file exchange supporting DWP and Ofgem processes. Successful bi-directional end-to-end test recorded 9–10 April 2025."),
 
@@ -372,12 +372,12 @@ def build_cv():
     ]
 
     for title, dates, role, desc in sa_projects_p2:
-        y = draw_project_entry(c, y, title, dates, role, desc)
-        y -= 5
+        y = draw_project_entry(c, y, title, dates, role, desc, 9, 12.5)
+        y -= 12
 
-    y -= 4
+    y -= 6
     y = section_header(c, ML, y, "KEY BUSINESS ANALYSIS PROJECTS (2021–2024)", CW)
-    y -= 2
+    y -= 4
 
     ba_projects_all = [
         ("Business Continuity / Castellan / Riskonnect", "Jun 2023–Apr 2024", "Business Analyst → Architecture",
@@ -406,8 +406,8 @@ def build_cv():
     ]
 
     for title, dates, role, desc in ba_projects_all:
-        y = draw_project_entry(c, y, title, dates, role, desc)
-        y -= 5
+        y = draw_project_entry(c, y, title, dates, role, desc, 9, 12.5)
+        y -= 11
 
     c.showPage()
 
@@ -418,7 +418,7 @@ def build_cv():
     y = H - MT
 
     y = section_header(c, ML, y, "PRIOR EXPERIENCE", CW)
-    y -= 3
+    y -= 5
 
     y = draw_role_header(c, y, "Technologist / IT Consultant", "Self-employed / Freelance", "United Kingdom", "Jul 2020 – Aug 2021")
     freelance_bullets = [
@@ -428,10 +428,10 @@ def build_cv():
         "Contributed to state-of-the-art equipment mapping project for Apple Maps",
     ]
     for b in freelance_bullets:
-        y = draw_bullet(c, ML, y, b, "InstrumentSans", 7.5, GRAPHITE, CW, 10.5)
-        y -= 2
+        y = draw_bullet(c, ML, y, b, "InstrumentSans", 9, GRAPHITE, CW, 13)
+        y -= 6
 
-    y -= 10
+    y -= 20
     y = draw_role_header(c, y, "Project Manager — IT", "Nelson Mandela Children's Hospital", "Johannesburg, South Africa", "Jun 2019 – Jul 2020")
     nm_bullets = [
         "Managed IT planning and implementation of small to medium healthcare technology projects across critical hospital infrastructure",
@@ -441,10 +441,10 @@ def build_cv():
         "Supervised vendor relationships to ensure success of technology implementations",
     ]
     for b in nm_bullets:
-        y = draw_bullet(c, ML, y, b, "InstrumentSans", 7.5, GRAPHITE, CW, 10.5)
-        y -= 2
+        y = draw_bullet(c, ML, y, b, "InstrumentSans", 9, GRAPHITE, CW, 13)
+        y -= 6
 
-    y -= 10
+    y -= 20
     y = draw_role_header(c, y, "Business Analyst", "DVT (placed at Telkom South Africa)", "South Africa", "Aug 2015 – May 2019")
     dvt_bullets = [
         "Delivered technology solutions for major clients including PwC, Vodacom, and Multichoice",
@@ -453,30 +453,30 @@ def build_cv():
         "Established and nurtured client-facing relationships to drive solution development",
     ]
     for b in dvt_bullets:
-        y = draw_bullet(c, ML, y, b, "InstrumentSans", 7.5, GRAPHITE, CW, 10.5)
-        y -= 2
+        y = draw_bullet(c, ML, y, b, "InstrumentSans", 9, GRAPHITE, CW, 13)
+        y -= 6
 
-    y -= 10
-    c.setFont("InstrumentSans-Bold", 9.5)
+    y -= 20
+    c.setFont("InstrumentSans-Bold", 11)
     c.setFillColor(DARK)
     c.drawString(ML, y, "Earlier Career")
-    y -= 12
+    y -= 16
 
     y = draw_text_block(c, ML, y, "Progressive technical roles across defence (Denel), broadcast media (ITV), enterprise storage (3Par/HP), telecommunications (Mweb), academic IT (Academy of Science, Canberra), and technology services (OKI Europe, OnDemand, CIC Technology). Delivered technical support, systems engineering, IT administration, and helpdesk management across the UK, South Africa, and Australia.",
-                       "InstrumentSans", 7.5, GRAPHITE, CW, 10.5)
-    y -= 6
-    c.setFont("DMMono", 6.5)
+                       "InstrumentSans", 9, GRAPHITE, CW, 13)
+    y -= 14
+    c.setFont("DMMono", 8)
     c.setFillColor(ACCENT)
     c.drawString(ML, y, "CAREER PROGRESSION:")
-    prog_x = ML + pdfmetrics.stringWidth("CAREER PROGRESSION:", "DMMono", 6.5) + 3 * mm
-    c.setFont("InstrumentSans", 7.5)
+    prog_x = ML + pdfmetrics.stringWidth("CAREER PROGRESSION:", "DMMono", 8) + 3 * mm
+    c.setFont("InstrumentSans", 9)
     c.setFillColor(GRAPHITE)
     c.drawString(prog_x, y, "Technical Support → Systems Engineer → IT Coordinator → BA → PM → Senior SA")
 
     # Publications
-    y -= 18
+    y -= 30
     y = section_header(c, ML, y, "PUBLICATIONS", CW)
-    y -= 3
+    y -= 6
 
     pubs = [
         ("Digital Infrastructure Standards for Energy Regulation: Enterprise Architecture in UK Government Service",
@@ -493,37 +493,18 @@ def build_cv():
     ]
 
     for title, venue, desc in pubs:
-        c.setFont("InstrumentSans-Bold", 7.5)
+        c.setFont("InstrumentSans-Bold", 10.5)
         c.setFillColor(DARK)
-        c.drawString(ML, y, title)
-        y -= 10
-        c.setFont("DMMono", 6)
+        lines = wrap_text(title, "InstrumentSans-Bold", 10.5, CW)
+        for line in lines:
+            c.drawString(ML, y, line)
+            y -= 14.5
+        c.setFont("DMMono", 8)
         c.setFillColor(ACCENT)
         c.drawString(ML, y, venue)
-        y -= 10
-        y = draw_text_block(c, ML, y, desc, "InstrumentSans-Italic", 7, STEEL, CW, 9.5)
-        y -= 7
-
-    # Cross-Project Competency Summary on page 3
-    y -= 4
-    y = section_header(c, ML, y, "CROSS-PROJECT COMPETENCY SUMMARY", CW)
-    y -= 2
-
-    competencies = [
-        ("Business Analysis", "Stakeholder discovery, requirements capture, process mapping, service catalogue scoping, user communication, acceptance support, and documentation."),
-        ("Governance & Assurance", "Architecture, security, privacy, procurement, data governance, TDA, and service-transition coordination."),
-        ("Solution Architecture", "HLD and current-state review, options appraisal, data-flow analysis, identity and access, support model, cost and licensing considerations."),
-        ("Delivery Support", "Workshops, action tracking, supplier engagement, handover, readiness reviews, UAT/testing coordination, and BAU transition support."),
-        ("Research & Evaluation", "Supplier capabilities, licensing, platform comparisons, technical feasibility, assurance evidence, and operational implications."),
-    ]
-
-    for comp_name, comp_desc in competencies:
-        c.setFont("InstrumentSans-Bold", 7)
-        c.setFillColor(DARK)
-        c.drawString(ML, y, comp_name)
-        y -= 9
-        y = draw_text_block(c, ML, y, comp_desc, "InstrumentSans", 7, GRAPHITE, CW, 9.5)
-        y -= 4
+        y -= 16
+        y = draw_text_block(c, ML, y, desc, "InstrumentSans-Italic", 9.5, STEEL, CW, 13.5)
+        y -= 18
 
     c.showPage()
 
@@ -538,23 +519,26 @@ def build_cv():
     y -= 2
 
     col1_x = ML
-    col2_x = ML + CW * 0.52
+    col2_x = ML + CW * 0.55
 
     ey = y
-    c.setFont("InstrumentSans-Bold", 7.5)
+    c.setFont("InstrumentSans-Bold", 9.5)
     c.setFillColor(DARK)
     c.drawString(col1_x, ey, "MBA")
-    ey -= 9
-    c.setFont("InstrumentSans", 6.8)
+    ey -= 12
+    c.setFont("InstrumentSans", 8)
     c.setFillColor(GRAPHITE)
     c.drawString(col1_x, ey, "University of Liverpool, UK · 2008–2011")
-    ey -= 12
+    ey -= 16
 
-    c.setFont("InstrumentSans-Bold", 7.5)
+    c.setFont("InstrumentSans-Bold", 9.5)
     c.setFillColor(DARK)
-    c.drawString(col1_x, ey, "Certificate III — Information, Digital Media & Technology")
-    ey -= 9
-    c.setFont("InstrumentSans", 6.8)
+    c.drawString(col1_x, ey, "Certificate III — Information, Digital")
+    ey -= 11
+    c.setFont("InstrumentSans-Bold", 9.5)
+    c.drawString(col1_x, ey, "Media & Technology")
+    ey -= 12
+    c.setFont("InstrumentSans", 8)
     c.setFillColor(GRAPHITE)
     c.drawString(col1_x, ey, "Institute of Technology, Canberra, Australia · 2014")
 
@@ -569,12 +553,12 @@ def build_cv():
         "UK Govt Cyber Launchpad (QA)",
     ]
     for cert in certs:
-        c.setFont("InstrumentSans", 6.5)
+        c.setFont("InstrumentSans", 8)
         c.setFillColor(GRAPHITE)
         c.drawString(col2_x, ey2, cert)
-        ey2 -= 8
+        ey2 -= 11
 
-    y = min(ey, ey2) - 6
+    y = min(ey, ey2) - 10
 
     # Professional Training
     y -= 4
@@ -591,17 +575,17 @@ def build_cv():
     ]
 
     for group_name, courses in training_groups:
-        c.setFont("InstrumentSans-Bold", 5.5)
+        c.setFont("InstrumentSans-Bold", 8)
         c.setFillColor(DARK)
         c.drawString(ML, y, group_name)
-        y -= 6.5
-        y = draw_text_block(c, ML, y, courses, "InstrumentSans", 5.5, STEEL, CW, 7)
-        y -= 2
+        y -= 10
+        y = draw_text_block(c, ML, y, courses, "InstrumentSans", 7.8, STEEL, CW, 10.5)
+        y -= 5
 
     # Technical Skills
-    y -= 8
+    y -= 10
     y = section_header(c, ML, y, "TECHNICAL SKILLS", CW)
-    y -= 2
+    y -= 3
 
     skills = [
         ("Enterprise Architecture", "TOGAF · ArchiMate · HLD/LLD · Enterprise Platform Governance · Options Appraisal"),
@@ -614,19 +598,19 @@ def build_cv():
     ]
 
     for domain, caps in skills:
-        c.setFont("InstrumentSans-Bold", 5.5)
+        c.setFont("InstrumentSans-Bold", 8)
         c.setFillColor(DARK)
         c.drawString(ML, y, domain)
-        desc_x = ML + 40 * mm
-        c.setFont("InstrumentSans", 5.5)
+        desc_x = ML + 45 * mm
+        c.setFont("InstrumentSans", 7.8)
         c.setFillColor(GRAPHITE)
         c.drawString(desc_x, y, caps)
-        y -= 7.5
+        y -= 12
 
     # Sector Experience
-    y -= 10
+    y -= 12
     y = section_header(c, ML, y, "SECTOR EXPERIENCE", CW)
-    y -= 2
+    y -= 3
 
     sectors = [
         ("Government / Energy", "Ofgem", "Critical national infrastructure, 28M+ households"),
@@ -639,27 +623,48 @@ def build_cv():
     ]
 
     for sector, org, ctx in sectors:
-        c.setFont("InstrumentSans-Bold", 5.5)
+        c.setFont("InstrumentSans-Bold", 8)
         c.setFillColor(DARK)
         c.drawString(ML, y, sector)
-        c.setFont("InstrumentSans", 5.5)
+        c.setFont("InstrumentSans", 8)
         c.setFillColor(ACCENT)
-        c.drawString(ML + 36 * mm, y, org)
-        c.setFont("InstrumentSans", 5.5)
+        c.drawString(ML + 44 * mm, y, org)
+        c.setFont("InstrumentSans", 7.8)
         c.setFillColor(STEEL)
-        c.drawString(ML + 96 * mm, y, ctx)
-        y -= 7.5
+        c.drawString(ML + 108 * mm, y, ctx)
+        y -= 13
+
+    # Cross-Project Competency Summary
+    y -= 12
+    y = section_header(c, ML, y, "CROSS-PROJECT COMPETENCY SUMMARY", CW)
+    y -= 3
+
+    competencies = [
+        ("Business Analysis", "Stakeholder discovery, requirements capture, process mapping, service catalogue scoping, user communication, acceptance support, and documentation."),
+        ("Governance & Assurance", "Architecture, security, privacy, procurement, data governance, TDA, and service-transition coordination."),
+        ("Solution Architecture", "HLD and current-state review, options appraisal, data-flow analysis, identity and access, support model, cost and licensing considerations."),
+        ("Delivery Support", "Workshops, action tracking, supplier engagement, handover, readiness reviews, UAT/testing coordination, and BAU transition support."),
+        ("Research & Evaluation", "Supplier capabilities, licensing, platform comparisons, technical feasibility, assurance evidence, and operational implications."),
+    ]
+
+    for comp_name, comp_desc in competencies:
+        c.setFont("InstrumentSans-Bold", 8)
+        c.setFillColor(DARK)
+        c.drawString(ML, y, comp_name)
+        y -= 10
+        y = draw_text_block(c, ML, y, comp_desc, "InstrumentSans", 7.8, GRAPHITE, CW, 10.5)
+        y -= 6
 
     # References
-    y -= 8
-    c.setFont("InstrumentSans-Italic", 6.5)
+    y -= 10
+    c.setFont("InstrumentSans-Italic", 8.5)
     c.setFillColor(STEEL)
     c.drawString(ML, y, "References available on request. Recommendation letters on file from direct management (Ofgem) and professional colleagues.")
 
-    y -= 12
+    y -= 16
     c.saveState()
     c.setFillColor(Color(0, 0, 0, alpha=0.07))
-    c.setFont("DMMono", 4)
+    c.setFont("DMMono", 5)
     c.drawString(ML, y, "REF: HLR-CV-2026-R2  ·  LAST UPDATED: AUGUST 2026")
     c.restoreState()
 
