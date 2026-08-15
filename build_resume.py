@@ -1,0 +1,477 @@
+#!/usr/bin/env python3
+"""
+Henri Le Riche — Senior Solutions Architect Resume
+Design Philosophy: Structural Current
+"""
+
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import mm
+from reportlab.lib.colors import Color, HexColor
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+FONT_DIR = "/root/.claude/skills/synced/canvas-design/canvas-fonts"
+pdfmetrics.registerFont(TTFont("Jura-Light", f"{FONT_DIR}/Jura-Light.ttf"))
+pdfmetrics.registerFont(TTFont("Jura-Medium", f"{FONT_DIR}/Jura-Medium.ttf"))
+pdfmetrics.registerFont(TTFont("InstrumentSans", f"{FONT_DIR}/InstrumentSans-Regular.ttf"))
+pdfmetrics.registerFont(TTFont("InstrumentSans-Bold", f"{FONT_DIR}/InstrumentSans-Bold.ttf"))
+pdfmetrics.registerFont(TTFont("InstrumentSans-Italic", f"{FONT_DIR}/InstrumentSans-Italic.ttf"))
+pdfmetrics.registerFont(TTFont("DMMono", f"{FONT_DIR}/DMMono-Regular.ttf"))
+
+W, H = A4
+OUT = "/home/user/Artist/henri-leriche-resume.pdf"
+
+DARK = HexColor("#1A1D23")
+SLATE = HexColor("#2E3340")
+GRAPHITE = HexColor("#4A4F5C")
+STEEL = HexColor("#6B7280")
+SILVER = HexColor("#9CA3AF")
+LIGHT = HexColor("#E8EAED")
+PAPER = HexColor("#F5F6F8")
+ACCENT = HexColor("#2563EB")
+ACCENT_LIGHT = HexColor("#DBEAFE")
+ACCENT_FAINT = HexColor("#EFF6FF")
+WHITE = HexColor("#FFFFFF")
+
+ML = 20 * mm
+MR = 16 * mm
+MT = 14 * mm
+MB = 10 * mm
+
+LEFT_COL_W = 54 * mm
+STRIP_W = 1.2 * mm
+LEFT_TOTAL = ML + LEFT_COL_W
+RIGHT_COL_X = LEFT_TOTAL + STRIP_W + 5 * mm
+RIGHT_COL_W = W - RIGHT_COL_X - MR
+
+
+def wrap_text(text, font, size, max_width):
+    words = text.split()
+    lines, current = [], ""
+    for word in words:
+        test = current + (" " if current else "") + word
+        if pdfmetrics.stringWidth(test, font, size) <= max_width:
+            current = test
+        else:
+            if current:
+                lines.append(current)
+            current = word
+    if current:
+        lines.append(current)
+    return lines
+
+
+def draw_text_block(c, x, y, text, font, size, color, max_width, leading=None):
+    if leading is None:
+        leading = size * 1.4
+    c.setFont(font, size)
+    c.setFillColor(color)
+    for line in wrap_text(text, font, size, max_width):
+        c.drawString(x, y, line)
+        y -= leading
+    return y
+
+
+def draw_bullet(c, x, y, text, font, size, color, max_width, leading=None):
+    if leading is None:
+        leading = size * 1.35
+    indent = 5 * mm
+    c.setFont("DMMono", size)
+    c.setFillColor(ACCENT)
+    c.drawString(x, y, "—")
+    c.setFont(font, size)
+    c.setFillColor(color)
+    for line in wrap_text(text, font, size, max_width - indent):
+        c.drawString(x + indent, y, line)
+        y -= leading
+    return y
+
+
+def section_label(c, x, y, label):
+    c.saveState()
+    s = 2.2 * mm
+    c.setFillColor(ACCENT)
+    c.rect(x, y - 0.3 * mm, s, s, fill=1, stroke=0)
+    c.setFont("DMMono", 5.2)
+    c.drawString(x + s + 1.8 * mm, y, label)
+    c.restoreState()
+
+
+def right_section_header(c, x, y, label, width):
+    c.setFont("DMMono", 5.5)
+    c.setFillColor(STEEL)
+    c.drawString(x, y, label)
+    y -= 2.5
+    c.setStrokeColor(HexColor("#D1D5DB"))
+    c.setLineWidth(0.3)
+    c.line(x, y, x + width, y)
+    return y - 10
+
+
+def draw_skill_tags(c, x, y, skills, max_width):
+    tag_x = x
+    tag_h = 5.2 * mm
+    tag_pad = 2 * mm
+    row_gap = 1.2 * mm
+    font, fsize = "InstrumentSans", 5.5
+    for skill in skills:
+        tag_w = pdfmetrics.stringWidth(skill, font, fsize) + tag_pad * 2
+        if tag_x + tag_w > x + max_width:
+            tag_x = x
+            y -= tag_h + row_gap
+        c.setFillColor(SLATE)
+        c.roundRect(tag_x, y - 1 * mm, tag_w, tag_h, 1 * mm, fill=1, stroke=0)
+        c.setFont(font, fsize)
+        c.setFillColor(LIGHT)
+        c.drawString(tag_x + tag_pad, y + 0.7 * mm, skill)
+        tag_x += tag_w + 1.5 * mm
+    return y - tag_h - row_gap
+
+
+def draw_metric_card(c, x, y, value, label, width):
+    card_h = 20 * mm
+    c.setFillColor(ACCENT_FAINT)
+    c.roundRect(x, y - card_h + 4 * mm, width, card_h, 1.5 * mm, fill=1, stroke=0)
+    c.setStrokeColor(HexColor("#BFDBFE"))
+    c.setLineWidth(0.4)
+    c.roundRect(x, y - card_h + 4 * mm, width, card_h, 1.5 * mm, fill=0, stroke=1)
+    c.setFont("Jura-Medium", 16)
+    c.setFillColor(ACCENT)
+    c.drawCentredString(x + width / 2, y - 4 * mm, value)
+    c.setFont("DMMono", 4.2)
+    c.setFillColor(STEEL)
+    lines = wrap_text(label, "DMMono", 4.2, width - 4 * mm)
+    ly = y - card_h + 8 * mm
+    for line in lines:
+        c.drawCentredString(x + width / 2, ly, line)
+        ly -= 5.5
+
+
+def build_resume():
+    c = canvas.Canvas(OUT, pagesize=A4)
+    c.setTitle("Henri Le Riche — Senior Solutions Architect")
+    c.setAuthor("Henri Le Riche")
+
+    # === BACKGROUND ===
+    c.setFillColor(PAPER)
+    c.rect(0, 0, W, H, fill=1, stroke=0)
+
+    # Subtle structural grid — right side
+    c.saveState()
+    c.setStrokeColor(HexColor("#EBEDF0"))
+    c.setLineWidth(0.12)
+    for gx in range(int(LEFT_TOTAL + STRIP_W), int(W), int(10 * mm)):
+        c.line(gx, 0, gx, H)
+    for gy in range(int(10 * mm), int(H), int(10 * mm)):
+        c.line(int(LEFT_TOTAL + STRIP_W), gy, int(W), gy)
+    c.restoreState()
+
+    # === LEFT COLUMN GROUND ===
+    c.setFillColor(DARK)
+    c.rect(0, 0, LEFT_TOTAL, H, fill=1, stroke=0)
+
+    # Fine grid on dark
+    c.saveState()
+    c.setStrokeColor(Color(1, 1, 1, alpha=0.025))
+    c.setLineWidth(0.15)
+    for gx in range(0, int(LEFT_TOTAL), int(5 * mm)):
+        c.line(gx, 0, gx, H)
+    for gy in range(0, int(H), int(5 * mm)):
+        c.line(0, gy, int(LEFT_TOTAL), gy)
+    c.restoreState()
+
+    # === ACCENT STRIP ===
+    c.setFillColor(ACCENT)
+    c.rect(LEFT_TOTAL, 0, STRIP_W, H, fill=1, stroke=0)
+
+    # === BOTTOM BAR ===
+    c.setFillColor(ACCENT)
+    c.rect(0, 0, W, 1.8 * mm, fill=1, stroke=0)
+
+    # ============================================================
+    # LEFT COLUMN
+    # ============================================================
+    y = H - MT
+
+    c.setFillColor(WHITE)
+    c.setFont("Jura-Light", 26)
+    c.drawString(ML, y, "HENRI")
+    y -= 28
+    c.setFont("Jura-Medium", 26)
+    c.drawString(ML, y, "LE RICHE")
+
+    y -= 10
+    c.setStrokeColor(ACCENT)
+    c.setLineWidth(0.7)
+    c.line(ML, y, ML + LEFT_COL_W - 4 * mm, y)
+
+    y -= 12
+    c.setFillColor(ACCENT_LIGHT)
+    c.setFont("DMMono", 5.8)
+    c.drawString(ML, y, "SENIOR SOLUTIONS ARCHITECT")
+
+    # Contact
+    y -= 18
+    section_label(c, ML, y, "CONTACT")
+    y -= 12
+    c.setFont("InstrumentSans", 6.5)
+    c.setFillColor(SILVER)
+    for item in ["London, United Kingdom", "henri.leriche@outlook.com", "+44 7376 783718"]:
+        c.drawString(ML, y, item)
+        y -= 9.5
+
+    # Education
+    y -= 8
+    section_label(c, ML, y, "EDUCATION")
+    y -= 12
+    c.setFont("InstrumentSans-Bold", 7)
+    c.setFillColor(WHITE)
+    c.drawString(ML, y, "MBA")
+    y -= 9
+    c.setFont("InstrumentSans", 6.2)
+    c.setFillColor(SILVER)
+    c.drawString(ML, y, "University of Liverpool, UK")
+    y -= 8
+    c.drawString(ML, y, "2008 – 2011")
+    y -= 8
+    y = draw_text_block(c, ML, y, "U.S. Master's equivalency (IEE/NACES)",
+                        "InstrumentSans-Italic", 5.5, HexColor("#7B8290"), LEFT_COL_W - 6 * mm, 7)
+
+    # Certifications
+    y -= 5
+    section_label(c, ML, y, "CERTIFICATIONS")
+    y -= 12
+    for cert in ["ITIL Foundation", "AI Fundamentals & Ethics",
+                 "Data Literacy (DataCamp)", "Google Cybersecurity",
+                 "UK Govt Cyber Launchpad"]:
+        c.setFont("InstrumentSans", 6.2)
+        c.setFillColor(SILVER)
+        c.drawString(ML, y, cert)
+        y -= 8.5
+
+    # Membership
+    y -= 5
+    section_label(c, ML, y, "MEMBERSHIP")
+    y -= 12
+    c.setFont("InstrumentSans-Bold", 6.5)
+    c.setFillColor(WHITE)
+    c.drawString(ML, y, "IEEE")
+    c.setFont("InstrumentSans", 6)
+    c.setFillColor(SILVER)
+    c.drawString(ML + pdfmetrics.stringWidth("IEEE", "InstrumentSans-Bold", 6.5) + 3 * mm, y, "Senior Member")
+
+    # Technical Skills
+    y -= 16
+    section_label(c, ML, y, "TECHNICAL SKILLS")
+    y -= 12
+
+    skill_groups = [
+        ("ARCHITECTURE", ["TOGAF", "ArchiMate", "HLD/LLD", "GDS", "Gov.UK"]),
+        ("CLOUD & DATA", ["Azure", "M365", "Power Platform", "Power BI", "Synapse"]),
+        ("SECURITY", ["ISO 27001", "GDPR", "Secure-by-Design"]),
+        ("AI & INNOVATION", ["AI Strategy", "LLMs", "Prompt Eng.", "Data Ethics"]),
+        ("DELIVERY", ["Agile", "Waterfall", "ITIL", "ServiceNow"]),
+    ]
+
+    avail_w = LEFT_COL_W - 6 * mm
+    for group_name, skills in skill_groups:
+        c.setFont("DMMono", 4.8)
+        c.setFillColor(ACCENT)
+        c.drawString(ML, y, group_name)
+        y -= 7.5
+        y = draw_skill_tags(c, ML, y, skills, avail_w)
+        y -= 1.5
+
+    # Publications
+    y -= 4
+    section_label(c, ML, y, "PUBLICATIONS")
+    y -= 12
+
+    pubs = [
+        ("Digital Infrastructure Standards for Energy Regulation", "Zenodo, 2025"),
+        ("Technical Infrastructure for Human Rights Documentation", "Zenodo, 2025"),
+        ("Comparative UK/US Regulatory Analysis", "SSRN, 2026"),
+    ]
+    for title, venue in pubs:
+        y = draw_text_block(c, ML, y, title, "InstrumentSans", 5.8, LIGHT, LEFT_COL_W - 6 * mm, 7.2)
+        c.setFont("DMMono", 4.8)
+        c.setFillColor(HexColor("#6B7280"))
+        c.drawString(ML, y + 1, venue)
+        y -= 12
+
+    # ============================================================
+    # RIGHT COLUMN
+    # ============================================================
+    ry = H - MT
+    rx = RIGHT_COL_X
+    rw = RIGHT_COL_W
+
+    # Profile
+    ry = right_section_header(c, rx, ry, "PROFILE", rw)
+
+    summary = "Enterprise architect and digital transformation leader with extensive progressive IT experience and an MBA. Currently shaping solution architecture for the UK's independent energy regulator, delivering secure, scalable platforms serving 3M+ users across critical national infrastructure. Published researcher in energy-sector enterprise architecture, technical infrastructure for human rights documentation, and comparative regulatory analysis. Proven record leading architecture across 18 government projects (2021–2026) spanning application, data, and infrastructure domains."
+    ry = draw_text_block(c, rx, ry, summary, "InstrumentSans", 7.5, GRAPHITE, rw, 10.8)
+
+    # === KEY METRICS STRIP ===
+    ry -= 9
+    metrics = [
+        ("18", "GOVT PROJECTS\nARCHITECTED"),
+        ("3M+", "USERS SERVED\nACROSS CNI"),
+        ("£150M+", "PROGRAMME\nBUDGETS"),
+        ("28M+", "UK HOUSEHOLDS\nREGULATED"),
+    ]
+    card_gap = 3 * mm
+    card_w = (rw - card_gap * 3) / 4
+    for i, (val, lbl) in enumerate(metrics):
+        cx = rx + i * (card_w + card_gap)
+        draw_metric_card(c, cx, ry, val, lbl, card_w)
+
+    ry -= 27 * mm
+
+    # Experience
+    ry = right_section_header(c, rx, ry, "EXPERIENCE", rw)
+
+    # --- Ofgem ---
+    c.setFont("InstrumentSans-Bold", 9.5)
+    c.setFillColor(DARK)
+    c.drawString(rx, ry, "Senior Solutions Architect")
+    ry -= 12
+
+    c.setFont("InstrumentSans", 7.2)
+    c.setFillColor(ACCENT)
+    c.drawString(rx, ry, "Ofgem — Office of Gas and Electricity Markets")
+    c.setFont("DMMono", 5.5)
+    c.setFillColor(STEEL)
+    c.drawRightString(rx + rw, ry, "Aug 2021 – Present")
+    ry -= 10
+    c.setFont("InstrumentSans-Italic", 6.5)
+    c.setFillColor(GRAPHITE)
+    c.drawString(rx, ry, "London, UK · Digital, Data, Security & Sustainability Directorate")
+    ry -= 13
+
+    ofgem_bullets = [
+        "Designed and assured HLD/LLD architectures for enterprise data platform (Synapse), AI-driven social listening, secure inter-departmental file transfer (DWP-Ofgem SFTE), and Power BI external sharing — all through TDA governance to production.",
+        "Led technical evaluation, SSO integration, and security assurance for Vivup benefits platform, 8x8/Crezovi telephony, and Digital Mail/Hybrid Mail digitisation across multiple procurement cycles.",
+        "Drove go-live architecture reviews including Power BI Publish to Web (GO decision Mar 2026) and business continuity platform (Castellan/Riskonnect), balancing security, cost, and operational readiness.",
+        "Delivered end-to-end BA on SharePoint Online migration, Teams provisioning automation, service catalogue redesign, and intranet rebuild — producing stakeholder-accepted designs and BAU transition docs.",
+        "Contributed data ethics and AI governance assessments; provided architectural input to procurement ensuring value across £150M+ programme budgets.",
+    ]
+
+    for bullet in ofgem_bullets:
+        ry = draw_bullet(c, rx, ry, bullet, "InstrumentSans", 6.8, GRAPHITE, rw, 9)
+        ry -= 3.5
+
+    # --- Nelson Mandela ---
+    ry -= 10
+    c.setFont("InstrumentSans-Bold", 8.8)
+    c.setFillColor(DARK)
+    c.drawString(rx, ry, "Project Manager — IT")
+    ry -= 11.5
+
+    c.setFont("InstrumentSans", 7.2)
+    c.setFillColor(ACCENT)
+    c.drawString(rx, ry, "Nelson Mandela Children's Hospital")
+    c.setFont("DMMono", 5.5)
+    c.setFillColor(STEEL)
+    c.drawRightString(rx + rw, ry, "Jun 2019 – Jul 2020")
+    ry -= 10
+    c.setFont("InstrumentSans-Italic", 6.5)
+    c.setFillColor(GRAPHITE)
+    c.drawString(rx, ry, "Johannesburg, South Africa")
+    ry -= 12
+
+    ry = draw_text_block(c, rx, ry, "Managed healthcare IT project delivery: scheduling, risk, change management, procurement, and vendor oversight for paediatric hospital systems.",
+                        "InstrumentSans", 7.2, GRAPHITE, rw, 10)
+
+    # --- DVT ---
+    ry -= 10
+    c.setFont("InstrumentSans-Bold", 8.8)
+    c.setFillColor(DARK)
+    c.drawString(rx, ry, "Business Analyst")
+    ry -= 11.5
+
+    c.setFont("InstrumentSans", 7.2)
+    c.setFillColor(ACCENT)
+    c.drawString(rx, ry, "DVT (placed at Telkom SA)")
+    c.setFont("DMMono", 5.5)
+    c.setFillColor(STEEL)
+    c.drawRightString(rx + rw, ry, "Aug 2015 – May 2019")
+    ry -= 11
+
+    ry = draw_text_block(c, rx, ry, "Delivered solutions for PwC, Vodacom, and Multichoice. Created user workflows, story maps, and led innovation onboarding across enterprise clients.",
+                        "InstrumentSans", 7.2, GRAPHITE, rw, 10)
+
+    # --- Earlier Career ---
+    ry -= 10
+    c.setFont("InstrumentSans-Bold", 8.8)
+    c.setFillColor(DARK)
+    c.drawString(rx, ry, "Earlier Career")
+    ry -= 12
+
+    ry = draw_text_block(c, rx, ry, "Progressive technical roles across defence (Denel), broadcast media (ITV), enterprise storage (3Par/HP), telecommunications (Mweb), and academic IT (Academy of Science, Canberra). Spanning the UK, South Africa, and Australia.",
+                        "InstrumentSans", 7.2, GRAPHITE, rw, 10)
+
+    # === KEY DOMAINS — bottom of right column ===
+    ry -= 16
+    ry = right_section_header(c, rx, ry, "KEY DOMAINS", rw)
+
+    domains = [
+        ("Energy Regulation", "UK critical national infrastructure · 28M+ households"),
+        ("Government Digital", "GDS-aligned architecture · 18 projects delivered"),
+        ("Healthcare IT", "Paediatric hospital systems · clinical infrastructure"),
+        ("Telecommunications", "Enterprise platforms · Vodacom, Telkom SA, Mweb"),
+        ("Defence & Broadcast", "Denel, ITV · secure systems & media infrastructure"),
+    ]
+
+    for domain_name, desc in domains:
+        c.setFont("InstrumentSans-Bold", 7)
+        c.setFillColor(DARK)
+        c.drawString(rx, ry, domain_name)
+
+        desc_x = rx + 47 * mm
+        c.setFont("InstrumentSans", 6.5)
+        c.setFillColor(STEEL)
+        c.drawString(desc_x, ry, desc)
+        ry -= 12
+
+    # === Circuit trace — bottom right ===
+    c.saveState()
+    c.setStrokeColor(HexColor("#D1D5DB"))
+    c.setLineWidth(0.3)
+    bx = rx + rw - 42 * mm
+    by = MB + 6 * mm
+    c.line(bx, by, bx + 37 * mm, by)
+    c.line(bx + 37 * mm, by, bx + 37 * mm, by + 5 * mm)
+    c.setFillColor(HexColor("#D1D5DB"))
+    c.circle(bx, by, 0.5 * mm, fill=1, stroke=0)
+    c.circle(bx + 13 * mm, by, 0.5 * mm, fill=1, stroke=0)
+    c.circle(bx + 25 * mm, by, 0.5 * mm, fill=1, stroke=0)
+    c.setFillColor(ACCENT)
+    c.circle(bx + 37 * mm, by + 5 * mm, 0.7 * mm, fill=1, stroke=0)
+    c.line(bx + 13 * mm, by, bx + 13 * mm, by - 3.5 * mm)
+    c.line(bx + 13 * mm, by - 3.5 * mm, bx + 21 * mm, by - 3.5 * mm)
+    c.setFillColor(HexColor("#D1D5DB"))
+    c.circle(bx + 21 * mm, by - 3.5 * mm, 0.5 * mm, fill=1, stroke=0)
+    c.restoreState()
+
+    # Reference marker
+    c.saveState()
+    c.setFillColor(Color(0, 0, 0, alpha=0.07))
+    c.setFont("DMMono", 3.8)
+    c.drawString(rx, MB, "REF: HLR-SA-2026-R1")
+    c.restoreState()
+
+    # Coordinate marker
+    c.saveState()
+    c.setFillColor(HexColor("#C8CCD2"))
+    c.setFont("DMMono", 3.8)
+    c.drawRightString(W - MR, H - 8 * mm, "51.5074°N  0.1278°W")
+    c.restoreState()
+
+    c.save()
+    print(f"Resume saved to {OUT}")
+
+
+if __name__ == "__main__":
+    build_resume()
